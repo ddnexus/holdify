@@ -1,0 +1,63 @@
+plugins:
+  - rubocop-minitest
+  - rubocop-packaging
+  - rubocop-performance
+  - rubocop-rake
+
+# trying to be good  O:)
+AllCops:
+  TargetRubyVersion: 3.2
+  NewCops: enable
+  Exclude:
+    # '___' prefixed dirs are excluded
+    - ___*/**/*
+    - vendor/**/*
+
+Minitest/EmptyLineBeforeAssertionMethods:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 130
+  Exclude:
+    - test/**/*
+
+Layout/ExtraSpacing:
+  AllowForAlignment:
+    Enabled: true
+  AllowBeforeTrailingComments:
+    Enabled: true
+
+Layout/EmptyLines:
+  Exclude:
+    - lib/config/pagy.rb
+
+Layout/BlockAlignment:
+  Enabled: false
+
+Layout/EndAlignment:
+  EnforcedStyleAlignWith: keyword
+
+Layout/HashAlignment:
+  Enabled: false
+
+# bad for performance
+Metrics:
+  Enabled: false
+
+# not cool
+Style/CommentedKeyword:
+  Enabled: false
+Style/EmptyCaseCondition:
+  Enabled: false
+
+# these cops are disabled only in the test files in order to
+# allow to copy and paste the failed output for test reconciliation
+Style/StringLiterals:
+  Enabled: true
+  Exclude:
+    - test/**/*
+
+Naming/VariableNumber:
+  Enabled: true
+  Exclude:
+    - test/**/*

@@ -1,0 +1,56 @@
+name: Holdify CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+    branches: ['**']
+
+jobs:
+  skip_check:
+    name: Skip Check
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    outputs:
+      should_skip: ${{ steps.skip_check.outputs.should_skip }}
+    steps:
+      - id: skip_check
+        uses: fkirc/skip-duplicate-actions@master
+        with:
+          concurrent_skipping: 'never'
+          skip_after_successful_duplicate: 'true'
+          paths: '[
+            ".github/workflows/holdify-ci.yml",
+            ".simplecov",
+            ".rubocop",
+            "lib/**",
+            "Gemfile.lock",
+            "Rakefile",
+            "test/**",
+            "tasks/**"
+            ]'
+          paths_ignore: '[
+            "**/*.md"
+            ]'
+          do_not_skip: '["workflow_dispatch"]'
+
+  ruby_test:
+    needs: skip_check
+    if: ${{ needs.should_run.outputs.should_skip != 'true' }}
+    name: Ruby ${{ matrix.ruby-version }} Test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        ruby-version: ['3.2', '3.3', '3.4']
+      fail-fast: false
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+          bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+      - name: Check Rubocop compliance
+        run: bundle exec rubocop --format github
+      - name: Check Tests
+        run: bundle exec rake test

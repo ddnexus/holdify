@@ -1,0 +1,7 @@
+/.bundle/
+/.devcontainer/
+/.idea/
+/.vscode/
+/coverage/
+/pkg/
+/tmp/

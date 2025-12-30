@@ -1,0 +1,81 @@
+---
+L8 0ca867b7bf510fddcec239e96477948f643f8155:
+- stored_value
+L9 202b9fa2ce205c45c152ed99a8ef7fba17d5ea56:
+- stored_value
+L10 b869287834987cd260189795bc65d75d69713f41:
+- !ruby/range
+  begin: 5
+  end: 34
+  excl: false
+L11 dd55612709dc7400545a54619da90428ad05f0e1:
+- !ruby/range
+  begin: 5
+  end: 34
+  excl: false
+L12 4ce2a8a06d1faf1e86972d45aea3161998ef847f:
+- - 1
+  - 4
+  - 5
+  - 6
+L13 18dec6662ee5da518536a68e365df325c41062f0:
+- - 1
+  - 4
+  - 5
+  - 6
+L14 408a90f5950707e732869d7c6ab12d75277bbbd9:
+- :a: 23
+  :b:
+    :c:
+    - a
+    - 5
+L15 0f1d28bc22a05c3d3e16f6dca64c0d33b02f09fe:
+- :a: 23
+  :b:
+    :c:
+    - a
+    - 5
+L16 33854d3a410533d2d18dd731b1a7d3485aba1d4e:
+- 2021-05-16 12:33:31.101458598 +00:00
+L17 651f3e73fbea82ce6f61facf79304dc2eb10c4c8:
+- 2021-05-16 12:33:31.101458598 +00:00
+L22 4f822aefe54a644d75dc28f31416f200d5d0c9aa:
+- plain
+L23 642c78523b67b270aff45677eb6f78490318b51b:
+- plain
+L25 68b2fbdb3aaebdeb7a1c8aebe109cec21f004f31:
+- assertion only
+L26 cf3e923bf0c9c51f701a31721f406fb927b1f24f:
+- assertion only
+L28 b267624462e9e6a3f4105dce45f14f704cf1e2e2:
+- message only
+L29 e372aec32bb4a01688c1ebcaf3f381187954fa4e:
+- message only
+L31 caf1610c0e93e9228edb23defb5a94c63aacd048:
+- assertion first
+L32 7e9f59585f50c16f722e504354c78318a7d60bd9:
+- assertion first
+L34 09638c102bcf437ffd98471ecb78330451ed50da:
+- message first
+L35 ab88050d3b4c04b70064fd8bda7ac46c41ae8fb4:
+- message first
+L37 784a25eb06ade03c373927ae4f754aac8bbf2005:
+- proc message
+L38 a6fe827424572b8ea42dc45c2d534aac541e2fdd:
+- proc message
+L40 b3efa62fe0f5af0ba483515f33ebb517f3ada6b4:
+- proc msg first
+L41 60790f6f4820eb5eed241fa56d99dfe764fbeb38:
+- proc msg first
+L43 89e26eeb25feb1c8fbf4e57ee4a56c2a860ca947:
+- proc msg last
+L44 cb46b7b25f5235b79d15a5c0f7435412b17bf0ec:
+- proc msg last
+L50 090d1a481823c5a8923773f31ecf46c9cd32868b:
+- right_value
+L54 1c2fcc6d5f41e67dbaaf1bc17898748f9b40a4ff:
+- right_value
+L63 5b370cc022508839162ee46558cc2061a009292a:
+- store-holdify (right_value)
+L65 358437d6360da30b3e81d1c1be7e6f56697ac8d7:
+- store-holdify (right_value)
