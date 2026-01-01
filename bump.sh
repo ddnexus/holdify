@@ -23,7 +23,7 @@ function bump(){
 }
 
 bump "$ROOT/lib/holdify.rb"
-bump "$ROOT/holdify.gemspec"
+bump "$ROOT/minitest-holdify.gemspec"
 
 # Update CHANGELOG
 changelog=$(cat <<-LOG

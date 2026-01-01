@@ -1,4 +1,4 @@
-[![Gem Version](https://img.shields.io/gem/v/holdify.svg?label=holdify&colorA=99004d&colorB=cc0066)](https://rubygems.org/gems/holdify)
+[![Gem Version](https://img.shields.io/gem/v/holdify.svg?label=holdify&colorA=99004d&colorB=cc0066)](https://rubygems.org/gems/minitest-holdify)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ddnexus/holdify/holdify-ci.yml?branch=master)](https://github.com/ddnexus/holdify/actions/workflows/holdify-ci.yml?query=branch%3Amaster)</span> <span>
 ![Coverage](https://img.shields.io/badge/coverage-100%25-coverage.svg?colorA=1f7a1f&colorB=2aa22a)</span> <span>
 ![Rubocop Status](https://img.shields.io/badge/rubocop-passing-rubocop.svg?colorA=1f7a1f&colorB=2aa22a)</span> <span>
@@ -76,7 +76,7 @@ Holdify is different. It holds them inline.
 
 ## Installation
 
-Add `holdify` to your `Gemfile` (usually in the `:test` group).
+Add `minitest-holdify` to your `Gemfile` (usually in the `:test` group).
 Minitest < 6.0 loads it automatically. For Minitest >= 6.0, add `Minitest.load :holdify` to your `test_helper.rb`.
 
 ## How it works
@@ -116,7 +116,7 @@ When your code changes intentionally, you need to tell Holdify to accept the new
 To quickly inspect the YAML output of a value without modifying the store, append `_?` to the method name (e.g., `assert_hold_?`, `must_hold_?`). This prints the value to `stderr` before running the standard assertion.
 
 > [!NOTE]
-> While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query** ("What is this value?"). It is designed as a temporary debugging tool.
+> While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** ("What is this value?"). It is designed as a temporary development tool to get a convenient feedback.
 
 ### Assertions and Expectations
 
@@ -144,7 +144,7 @@ _(actual).must_hold 'Data consistency failed'
 Holdify stores values in a standard YAML file named after your test file (e.g., `test_file.rb.yaml`). The keys are designed to be human-readable, allowing you to easily correlate stored values with your source code:
 
 - **Line Matching:** Keys start with `L<num>` corresponding to the line number of the assertion in your test file (e.g., `L10`).
-- **Multiple Hits:** If a single assertion line is executed multiple times (e.g., inside a loop), Holdify stores them as a chronological list under the same key.
+- **Multiple Hits:** If a single assertion line is executed multiple times (e.g., inside a loop), Holdify stores them as a list under the same key.
 
 **Example:**
 

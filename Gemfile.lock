@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    holdify (1.0.0)
+    minitest-holdify (1.0.0)
       minitest (>= 5.0.0)
 
 GEM
@@ -98,9 +98,9 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
-  holdify!
   irb
   minitest
+  minitest-holdify!
   minitest-mock
   minitest-reporters
   minitest-unordered

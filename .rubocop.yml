@@ -61,3 +61,7 @@ Naming/VariableNumber:
   Enabled: true
   Exclude:
     - test/**/*
+
+Naming/FileName:
+  Exclude:
+    - 'lib/minitest-holdify.rb'

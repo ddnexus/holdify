@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Gem::Specification.new do |s|
-  s.name        = 'holdify'
+  s.name        = 'minitest-holdify'
   s.version     = '1.0.0'
   s.authors     = ['Domizio Demichelis']
   s.email       = ['dd.nexus@gmail.com']

@@ -17,8 +17,8 @@ task :rubygems_release do
   output = `git status --porcelain`
   abort 'Working tree dirty!' unless output.empty?
 
-  branch = `git rev-parse --abbrev-ref HEAD`
-  abort 'Wrong branch to release!' unless /^master/.match?(branch)
+  branch = `git rev-parse --abbrev-ref HEAD`.strip
+  abort 'Wrong branch to release!' unless branch == 'master'
 
   Rake::Task['build'].invoke
   Rake::Task['release'].invoke
