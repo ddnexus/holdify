@@ -6,9 +6,9 @@ require 'holdify'
 module Minitest
   # Set the Holdify options
   def self.plugin_holdify_options(opts, _options)
-    opts.on '--holdify-rebuild', 'Rebuild the stores with the current entries/values' do
-      Holdify.rebuild = true
-      Holdify.quiet   = true
+    opts.on '--holdify-reconcile', 'Reconcile the held values with the new ones' do
+      Holdify.reconcile = true
+      Holdify.quiet     = true
     end
     # :nocov:
     opts.on '--holdify-quiet', 'Skip the warning on storing a new value' do
@@ -65,7 +65,7 @@ module Minitest
     def assert_hold_?(actual, *)
       @holdify ||= Holdify.new(self)
       location = @holdify.find_location
-      warn "[holdify] Actual value dumped from: #{location.path}:#{location.lineno}\n=> #{actual.inspect}"
+      warn "[holdify] Actual value from: #{location.path}:#{location.lineno}\n=> #{actual.inspect}"
       @holdify.hold(actual)
     end
   end

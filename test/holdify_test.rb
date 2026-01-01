@@ -3,7 +3,7 @@
 require 'test_helper'
 
 describe 'holdify' do
-  describe 'version match' do
+  describe 'Version match' do
     it 'has version' do
       _(Holdify::VERSION).wont_be_nil
     end

@@ -8,7 +8,7 @@ class Holdify
   class Store
     def initialize(source_path)
       @path = "#{source_path}#{CONFIG[:ext]}"
-      File.delete(@path) if Holdify.rebuild && File.exist?(@path)
+      File.delete(@path) if Holdify.reconcile && File.exist?(@path)
 
       @source = {} # { lineno => id }
       File.foreach(source_path).with_index(1) do |line, lineno|

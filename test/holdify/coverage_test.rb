@@ -5,7 +5,7 @@ require 'optparse'
 
 describe 'Holdify Coverage' do
   after do
-    Holdify.rebuild = false
+    Holdify.reconcile = false
     Holdify.quiet = false
   end
 
@@ -24,17 +24,17 @@ describe 'Holdify Coverage' do
     _(File.exist?(path)).must_equal false
   end
 
-  it 'handles rebuild option parsing' do
-    # Covers minitest/holder_plugin.rb: opts.on '--holdify-rebuild'
+  it 'handles reconcile option parsing' do
+    # Covers minitest/holder_plugin.rb: opts.on '--holdify-reconcile'
     opts = OptionParser.new
     Minitest.plugin_holdify_options(opts, {})
-    opts.parse!(['--holdify-rebuild'])
-    _(Holdify.rebuild).must_equal true
+    opts.parse!(['--holdify-reconcile'])
+    _(Holdify.reconcile).must_equal true
   end
 
-  it 'handles rebuild deletion in initialize' do
-    # Covers holdify.rb: File.delete(path) if self.class.rebuild
-    Holdify.rebuild = true
+  it 'handles reconcile deletion in initialize' do
+    # Covers holdify.rb: File.delete(path) if self.class.reconcile
+    Holdify.reconcile = true
     store_path = "#{__FILE__}#{Holdify::CONFIG[:ext]}"
     File.write(store_path, "---")
 

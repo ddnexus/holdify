@@ -86,26 +86,26 @@ Minitest < 6.0 loads it automatically. For Minitest >= 6.0, add `Minitest.load :
 Holdify binds the stored value to the **exact line number** of your assertion.
 
 1.  **Capture:** The first time a test runs, Holdify captures the returned value and stores it in a `*.yaml` file next to the test.
-2.  **Bind:** The value is indexed by the line number (e.g., `L10`), creating a virtual link between your code and the stored data.
+2.  **Bind:** The value is indexed by the test line number (e.g., `L10`) triggering the hold, correlating your code and the stored data.
 3.  **Assert:** On subsequent runs, Holdify checks that the fresh value matches the one "held" at that line.
 
 > [!TIP]
 > **Mental Model:** Imagine the expected value is written directly in your test file at line X. Holdify simply moves that text into a separate file (indexed by `LX`) to keep your code clean, but the assertion remains strictly bound to that specific line. You can even inspect the YAML file for one-to-one feedback.
 
-### Easy update
+### Easy reconciliation
 
-When your code changes intentionally, you need to tell Holdify to accept the new reality. You have three options:
+When your code changes intentionally, you need to reconcile the held values with the new values. You have three options:
 
-1.  **Rebuild all:** Run tests with the `--holdify-rebuild` option.
+1.  **Reconcile:** Run tests with the `--holdify-reconcile` option. Holdify will update any value that changed in the run tests.
     ```sh
-    rake test TESTOPTS=--holdify-rebuild
+    rake test TESTOPTS=--holdify-reconcile
     ```
     > [!WARNING]
     > Only use this when you are sure *all* new outputs are correct: everything will be overwritten!
 
-2.  **Manual deletion:** Delete the specific `*.yaml` store file and re-run the test. Ideally suited for when you want to reset a specific test file.
+2.  **Delete:** Delete the specific `*.yaml` file(s) and re-run the test(s). Ideally suited for when you want to reset specific test files _(and deleting is easier than using the ENV variable)_.
 
-3.  **Selective update (The "Bang" method):** Temporarily replace the method with its `!` counterpart. This forces Holdify to update the store for that specific assertion.
+3.  **Selective update:** Temporarily append `!` to the method statements to reconcile and re-run the test. This forces Holdify to update the value.
   - `assert_hold` &rarr; `assert_hold!`
   - `must_hold` &rarr; `must_hold!`
   - `to_hold` &rarr; `to_hold!`
@@ -115,11 +115,14 @@ When your code changes intentionally, you need to tell Holdify to accept the new
 
 ### Inspecting Values
 
-To quickly inspect the YAML output of a value without modifying the store, append `_?` to the method name (e.g., `assert_hold_?`, `must_hold_?`). This prints the value to `stderr` before running the standard assertion.
+To quickly inspect the actual value from your code without changing anything, append `_?` to the statement and re-run the test. This prints the value to `stderr`.
+
+- `assert_hold` &rarr; `assert_hold_?`
+- `must_hold` &rarr; `must_hold_?`
+- `to_hold` &rarr; `to_hold_?`
 
 > [!NOTE]
- > While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** ("What is this value?"). It is designed as a temporary development tool to get convenient feedback.
-> While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** ("What is this value?"). It is designed as a temporary development tool to get convenient feedback.
+> While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** _("Hold what value?")_. It is designed as a temporary development tool for quick feedback.
 
 ### Assertions and Expectations
 
@@ -185,7 +188,7 @@ L10 8a93...:
 
 ## Caveats
 
-*   **Equality:** Stored values are verified using standard Minitest assertions. Custom objects must implement `==` correctly to be held.
+*   **Equality:** Stored values are verified using standard Minitest assertions, so ensure your custom objects implement `==` correctly.
 *   **YAML serialization:** Complex objects with `ivars` might serialize differently across Ruby versions due to `Psych` (YAML) changes. It is safer to store raw data (hashes/attributes) to avoid this.
 
 ## Repository Info

@@ -9,7 +9,7 @@ class Holdify
   CONFIG  = { ext: '.yaml' }.freeze
 
   class << self
-    attr_accessor :rebuild, :quiet
+    attr_accessor :reconcile, :quiet
 
     def stores = @stores ||= {}
   end
@@ -32,7 +32,7 @@ class Holdify
     @session[id] << actual
     @forced << "#{location.path}:#{location.lineno}" if force
 
-    return actual if force || self.class.rebuild
+    return actual if force || self.class.reconcile
 
     stored = @store.stored(id)
     index  = @session[id].size - 1

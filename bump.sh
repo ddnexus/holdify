@@ -2,6 +2,13 @@
 
 set -e
 
+error_handler() {
+  echo "An error occurred on line $1. Executing git reset."
+  git reset --hard
+}
+
+trap 'error_handler $LINENO' ERR
+
 ROOT="$(cd -P -- "$(dirname -- "$0")" && printf '%s\n' "$(pwd -P)")"
 
 cur=$(ruby -Ilib -rholdify -e 'puts Holdify::VERSION')
@@ -41,14 +48,16 @@ awk -v l="$changelog" '{sub(/# CHANGELOG/, l); print}' "$CHANGELOG" > "$TMPFILE"
 mv "$TMPFILE" "$CHANGELOG"
 
 # Run test to check the consistency across files
-bundle exec ruby -Itest test/holdify_test.rb --name  "/holdify::Version match(#|::)/"
+SKIP_COVERAGE=true ruby -Itest test/holdify_test.rb --name  "/holdify::Version match(#|::)/"
+
+bundle install --local
 
 # Show diff
-git diff -U0
+#  git diff -U0
 
 # Optional commit
 read -rp 'Do you want to commit the changes? (y/n)> ' input
 if [[ $input = y ]] || [[ $input = Y ]]; then
-  git add lib/holdify.rb CHANGELOG.md
+  git add .
   git commit -m "Version $ver"
 fi

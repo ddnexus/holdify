@@ -7,7 +7,7 @@ require_relative '../test_helper'
 describe 'holdify/rebuild_option' do
   it 'rebuilds the store' do
     store_path = "#{__FILE__}#{Holdify::CONFIG[:ext]}"
-    # 1. Verify Rebuild: The flag should have triggered deletion in Holdify.new
+    # 1. Verify Reconcile: The flag should have triggered deletion in Holdify.new
     value(store_path).path_wont_exist
     expect('store_value').to_hold
     # 2. Verify Creation: We must force a save because Holdify now buffers writes
