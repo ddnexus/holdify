@@ -4,11 +4,11 @@ set -e
 
 ROOT="$(cd -P -- "$(dirname -- "$0")" && printf '%s\n' "$(pwd -P)")"
 
-cur=$(ruby -Ilib -rholder -e 'puts Rematch::VERSION')
+cur=$(ruby -Ilib -rholdify -e 'puts Holdify::VERSION')
 current=${cur//./\\.}
 log=$(git log --format="- %s%b" "$cur"..HEAD)
 
-echo     "Current Rematch::VERSION: $cur"
+echo     "Current Holdify::VERSION: $cur"
 read -rp 'Enter the new version> ' ver
 
 [[ -z $ver ]] && echo 'Missing new version!' && exit 1
@@ -41,7 +41,7 @@ awk -v l="$changelog" '{sub(/# CHANGELOG/, l); print}' "$CHANGELOG" > "$TMPFILE"
 mv "$TMPFILE" "$CHANGELOG"
 
 # Run test to check the consistency across files
-bundle exec ruby -Itest test/holder_test.rb --name  "/holdify::Version match(#|::)/"
+bundle exec ruby -Itest test/holdify_test.rb --name  "/holdify::Version match(#|::)/"
 
 # Show diff
 git diff -U0

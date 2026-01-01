@@ -5,11 +5,9 @@ Gem::Specification.new do |s|
   s.version     = '1.0.0'
   s.authors     = ['Domizio Demichelis']
   s.email       = ['dd.nexus@gmail.com']
-  s.summary     = 'Hardcoded values suck! Hold them inline!'
-  s.description = 'Holdify eliminates the burden of maintaining large expected values into your test files. ' \
-                  'It behaves as if the expected value were hardcoded inline, but keeps it stored externally. ' \
-                  'This ensures your values hold true without polluting your test files, ' \
-                  'and allows for effortless updates when your code changes.'
+  s.summary     = 'Hardcoded values suck! Holdify them.'
+  s.description = 'Stop maintaining large expected values in your test/fixture files! ' \
+                  'Hold them automatically. Update them effortlessly.'
   s.homepage    = 'https://github.com/ddnexus/holdify'
   s.license     = 'MIT'
   s.files       = Dir['lib/**/*.rb'] + ['LICENSE.txt']

@@ -1,4 +1,4 @@
-[![Gem Version](https://img.shields.io/gem/v/holdify.svg?label=holdify&colorA=99004d&colorB=cc0066)](https://rubygems.org/gems/minitest-holdify)
+[![Gem Version](https://img.shields.io/gem/v/minitest-holdify.svg?label=holdify&colorA=99004d&colorB=cc0066)](https://rubygems.org/gems/minitest-holdify)
 [![Build Status](https://img.shields.io/github/actions/workflow/status/ddnexus/holdify/holdify-ci.yml?branch=master)](https://github.com/ddnexus/holdify/actions/workflows/holdify-ci.yml?query=branch%3Amaster)</span> <span>
 ![Coverage](https://img.shields.io/badge/coverage-100%25-coverage.svg?colorA=1f7a1f&colorB=2aa22a)</span> <span>
 ![Rubocop Status](https://img.shields.io/badge/rubocop-passing-rubocop.svg?colorA=1f7a1f&colorB=2aa22a)</span> <span>
@@ -6,60 +6,62 @@
 
 # Holdify
 
-### Hardcoded values suck! Hold them inline!
+### Hardcoded values suck! Holdify them.
 
-Holdify eliminates the burden of maintaining large expected values into your test files. It behaves as if the expected value were hardcoded inline, but keeps it stored externally. This ensures your values hold true without polluting your test files, and allows for effortless updates when your code changes.
+Stop maintaining large expected values in your test/fixture files! Hold them automatically. Update them effortlessly.
 
 ### Instead of this mess...
 
 ```ruby
-it 'generates the pagination nav tag' do
-  assert_equal("<nav id=" test - nav - id " class=" pagy - nav
-  pagination " aria-label=" pager "><span class=" page prev "><a href=" / foo? page = 9 "  link-extra
-  rel=" prev " aria-label=" previous ">&lsaquo;&nbsp;Prev</a></span> <span class=" page "><a
-  href=" / foo? page = 1 "  link-extra >1</a></span> <span class=" page gap ">&hellip;</span>
-  <span class=" page "><a href=" / foo? page = 6 "  link-extra >6</a></span> <span class=" page "><a
-  href=" / foo? page = 7 "  link-extra >7</a></span> <span class=" page "><a href=" / foo? page = 8 "  link-extra
-  >8</a></span> <span class=" page "><a href=" / foo? page = 9 "  link-extra rel=" prev " >9</a></span>
-  <span class=" page active ">10</span> <span class=" page "><a href=" / foo? page = 11 "  link-extra
-  rel=" next " >11</a></span> <span class=" page "><a href=" / foo? page = 12 "  link-extra
-  >12</a></span> <span class=" page "><a href=" / foo? page = 13 "  link-extra >13</a></span>
-  <span class=" page "><a href=" / foo? page = 14 "  link-extra >14</a></span> <span class=" page
-  gap ">&hellip;</span> <span class=" page "><a href=" / foo? page = 50 "  link-extra >50</a></span>
-  <span class=" page next "><a href=" / foo? page = 11 "  link-extra rel=" next " aria-label=" next ">Next&nbsp;&rsaquo;</a></span></nav>",
-  view.pagy_nav(pagy))
+it 'generates the series_nav' do
+  assert_equal("<nav class=\"pagy series-nav\" aria-label=\"Pages\"><a role=\"link\" aria-disabled=\"true\"
+ aria-label=\"Previous\">&lt;</a><a role=\"link\" aria-disabled=\"true\" aria-current=\"page\">1</a><a 
+href=\"/path?example=123&page=2\" rel=\"next\">2</a><a href=\"/path?example=123&page=3\">3</a><a href=\"/path?
+example=123&page=4\">4</a><a href=\"/path?example=123&page=5\">5</a><a href=\"/path?example=123&page=6\">
+6</a><a href=\"/path?example=123&page=7\">7</a><a href=\"/path?example=123&page=8\">8</a><a href=\"/path?
+example=123&page=9\">9</a><a role=\"separator\" aria-disabled=\"true\">&hellip;</a><a href=\"/path?
+example=123&page=50\">50</a><a href=\"/path?example=123&page=2\" rel=\"next\" aria-label=\"Next\">&gt;</a></nav>",
+  @pagy.series_nav)
 end
 
-it 'generates the metadata hash' do
-  assert_equal(
-  {
-  :scaffold_url => "http://www.example.com/subdir?page=__pagy_page__",
-  :first_url    => "http://www.example.com/subdir?page=1",
-  :count        => 1000,
-  :page         => 1,
-  :items        => 20,
-  # ... 40 more lines of hash data ...
-  :series       => ["1", 2, 3, 4, 5, :gap, 50]
-  },
-  controller.pagy_metadata)
+it 'generates the data_hash' do
+  assert_equal({ url_template: "/path?example=123&page=P ", first_url: "/path?example=123", 
+    current_url: "/path?example=123&page=1", page_url: "/path?example=123&page=1", 
+    next_url: "/path?example=123&page=2", last_url: "/path?example=123&page=50", count: 1000, page: 1, 
+    limit: 20, last: 50, in: 20, from: 1, to: 20, next: 2, options: { limit: 20, limit_key: "limit",
+    page_key: "page", page: 1, count: 1000 } }, @pagy.data_hash)
 end
 ```
 
-### Do it the _holdify_ way!
+### Holdify your tests!
+
+Write the same as:
 
 ```ruby
-it 'generates the pagination nav tag' do
-  # Assertion
-  assert_hold view.pagy_nav(pagy)
-  
-  # Expectation (standard)
-  _(view.pagy_nav(pagy)).must_hold
-  
-  # Expectation (fluent / RSpec-style)
-  expect(view.pagy_nav(pagy)).to_hold
-  value(view.pagy_nav(pagy)).must_hold
+it 'generates the series_nav' do
+  assert_hold @pagy.series_nav
+end
+
+it 'generates the data_hash' do
+  assert_hold @pagy.data_hash
 end
 ```
+
+Or if you prefer a more expressive syntax:
+
+```ruby
+it 'generates the series_nav' do
+  expect(@pagy.series_nav).to_hold
+end
+
+it 'generates the data_hash' do
+  expect(@pagy.data_hash).to_hold
+end
+```
+
+> [!NOTE]
+> Of course you can also use the `_()` or `value()` with `must_hold`.
+> For example: `value(anything).must_hold`
 
 ## Why Holdify?
 
@@ -88,9 +90,9 @@ Holdify binds the stored value to the **exact line number** of your assertion.
 3.  **Assert:** On subsequent runs, Holdify checks that the fresh value matches the one "held" at that line.
 
 > [!TIP]
-> **Mental Model:** Imagine the expected value is written directly in your test file at line X. Holdify simply moves that text into a separate file (indexed by `LX`) to keep your code clean, but the assertion remains strictly bound to that specific line, You can even inspect the YAML file for a one-to-one feedback.
+> **Mental Model:** Imagine the expected value is written directly in your test file at line X. Holdify simply moves that text into a separate file (indexed by `LX`) to keep your code clean, but the assertion remains strictly bound to that specific line. You can even inspect the YAML file for one-to-one feedback.
 
-### Updating stored values
+### Easy update
 
 When your code changes intentionally, you need to tell Holdify to accept the new reality. You have three options:
 
@@ -116,7 +118,8 @@ When your code changes intentionally, you need to tell Holdify to accept the new
 To quickly inspect the YAML output of a value without modifying the store, append `_?` to the method name (e.g., `assert_hold_?`, `must_hold_?`). This prints the value to `stderr` before running the standard assertion.
 
 > [!NOTE]
-> While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** ("What is this value?"). It is designed as a temporary development tool to get a convenient feedback.
+ > While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** ("What is this value?"). It is designed as a temporary development tool to get convenient feedback.
+> While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** ("What is this value?"). It is designed as a temporary development tool to get convenient feedback.
 
 ### Assertions and Expectations
 
@@ -137,7 +140,7 @@ assert_hold actual, 'Data consistency failed'
 _(actual).must_hold 'Data consistency failed'
 ```
 
-**Note:** The custom assertion must be a symbol (e.g., `:assert_something`) not an expectation (e.g, `:must_something`). The order of arguments (assertion symbol vs message) is flexible.
+**Note:** The custom assertion must be a symbol (e.g., `:assert_something`) not an expectation (e.g., `:must_something`). The order of arguments (assertion symbol vs message) is flexible.
 
 ### Store Format
 
