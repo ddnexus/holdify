@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    minitest-holdify (1.0.1)
+    minitest-holdify (1.0.2)
       minitest (>= 5.0.0)
 
 GEM
