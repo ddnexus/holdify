@@ -36,12 +36,12 @@ jobs:
 
   ruby_test:
     needs: skip_check
-    if: ${{ needs.should_run.outputs.should_skip != 'true' }}
+    if: ${{ needs.skip_check.outputs.should_skip != 'true' }}
     name: Ruby ${{ matrix.ruby-version }} Test
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        ruby-version: ['3.2', '3.3', '3.4']
+        ruby-version: ['3.2', '3.3', '3.4', '4.0']
       fail-fast: false
     steps:
       - uses: actions/checkout@v4

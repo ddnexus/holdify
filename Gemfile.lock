@@ -94,7 +94,6 @@ GEM
     unicode-emoji (4.2.0)
 
 PLATFORMS
-  ruby
   x86_64-linux
 
 DEPENDENCIES
@@ -115,4 +114,4 @@ DEPENDENCIES
   simplecov
 
 BUNDLED WITH
-   2.6.9
+  4.0.3
