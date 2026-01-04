@@ -2,8 +2,9 @@
 
 require 'yaml'
 require 'fileutils'
+require 'digest/sha1'
 
-class Holdify
+module Holdify
   # A simple Hash-based store that syncs with a static source map
   class Store
     def initialize(source_path)
