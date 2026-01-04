@@ -12,7 +12,7 @@ describe 'holdify/stored' do
     _([1, 4, 5, 6]).must_hold
     assert_hold [1, 4, 5, 6]
     _(a: 23, b: { c: ['a', 5] }).must_hold
-    assert_hold(a: 23, b: { c: ['a', 5] })
+    assert_hold({ a: 23, b: { c: ['a', 5] } })
     _(Time.parse('2021-05-16 12:33:31.101458598 +00:00')).must_hold
     assert_hold(Time.parse('2021-05-16 12:33:31.101458598 +00:00'))
   end
@@ -56,15 +56,15 @@ describe 'holdify/stored' do
     _(error2.message).must_equal "Expected: \"right_value\"\n  Actual: \"wrong_value\""
 
     # Prevent saving the wrong values used for testing failure
-    @holdify.instance_variable_get(:@session).clear
+    @hold.instance_variable_get(:@session).clear
   end
 
   it 'should force holdify' do
     assert_hold!('store-holdify (right_value)')
-    _(@holdify.forced).wont_be_empty
+    _(@hold.forced).wont_be_empty
     _('store-holdify (right_value)').must_hold!
-    _(@holdify.forced).wont_be_empty
+    _(@hold.forced).wont_be_empty
 
-    @holdify.forced.clear
+    @hold.forced.clear
   end
 end

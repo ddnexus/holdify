@@ -1,6 +1,9 @@
 ---
 L11 9c9a2c59f67bfc555cfeb0dcccb3e6df6944a0bc:
 - direct
+L15 0bedb93dd5fe55b13186c4abca8242b4f7f02d09:
+- loop1
+- loop2
 L16 4517cb42e535bee6d6df6c49fb27ec6dc7befaaf:
 - loop1
 - loop2
@@ -9,3 +12,9 @@ L21 fc9d44dfe5d0ed0a248f197c76aa1ed1d73b916a:
 L29 9b26f89a1b520293a1875f3fdc2a7052d07607f6:
 - block
 - block
+L33 c5a9f44bff2f5ea0813bdec85174ad29618b1157:
+- lambda
+L37 08ed4c51ffdc7db3e1c3a888811340e5b5086466:
+- tap
+L41 c12f1ac499c471ceb55524d1bd3a7229598471c0:
+- proc
