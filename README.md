@@ -115,14 +115,14 @@ When your code changes intentionally, you need to reconcile the held values with
 
 ### Inspecting Values
 
-To quickly inspect the actual value from your code without changing anything, append `_?` to the statement and re-run the test. This prints the value to `stderr`.
+To quickly inspect the actual value from your code without changing anything, append `?` to the statement and re-run the test. If the test passes (i.e, the assertion is `true`), it prints the value to `stderr`. _(If it fails, minitest takes over printing the actual and expected values, so you already have the feedback.)_
 
-- `assert_hold` &rarr; `assert_hold_?`
-- `must_hold` &rarr; `must_hold_?`
-- `to_hold` &rarr; `to_hold_?`
+- `assert_hold` &rarr; `assert_hold?`
+- `must_hold` &rarr; `must_hold?`
+- `to_hold` &rarr; `to_hold?`
 
 > [!NOTE]
-> While `?` conventionally denotes a boolean predicate, Holdify uses it here as a **query term** _("Hold what value?")_. It is designed as a temporary development tool for quick feedback.
+> While `?` conventionally denotes a boolean predicate, assertions themselves are kind of predicates with a side effect. Holdify uses it here as a **query term** _("Hold what value?")_. It is designed as a temporary development tool for quick feedback.
 
 ### Assertions and Expectations
 

@@ -28,4 +28,16 @@ class NestedHelperTest < Minitest::Test
   def test_block_call
     2.times { helper_method('block') }
   end
+
+  def test_lambda_call
+    -> { helper_method('lambda') }.call
+  end
+
+  def test_tap
+    tap { helper_method('tap') }
+  end
+
+  def test_proc_call
+    proc { helper_method('proc') }.call
+  end
 end

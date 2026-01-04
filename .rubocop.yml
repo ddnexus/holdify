@@ -57,6 +57,9 @@ Style/StringLiterals:
   Exclude:
     - test/**/*
 
+Style/LambdaCall:
+  Enabled: false
+
 Naming/VariableNumber:
   Enabled: true
   Exclude:

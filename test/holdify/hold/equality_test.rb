@@ -21,7 +21,8 @@ describe 'holdify/equality' do
 
   describe Holdify do
     it 'sticks nested describe' do
-      expect('a value').to_hold
+      value = 'a value'
+      expect(value).to_hold
     end
   end
 
@@ -29,7 +30,7 @@ describe 'holdify/equality' do
     # assert_equal_unordered [2,1,3], [1,2,3]
     # the store contains [2,1,3] instead of [1,2,3] (edit manually if rebuilt)
     array = [1, 2, 3]
-    _(array).must_hold_? :assert_equal_unordered
+    _(array).must_hold :assert_equal_unordered
     value(array).must_hold :assert_equal_unordered
     expect(array).to_hold :assert_equal_unordered
     assert_hold array, :assert_equal_unordered
