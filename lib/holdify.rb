@@ -5,7 +5,7 @@ require_relative 'holdify/hold'
 
 # Add description
 module Holdify
-  VERSION = '1.0.2'
+  VERSION = '1.0.3'
   CONFIG  = { ext: '.yaml' }.freeze
 
   class << self
