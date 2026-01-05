@@ -45,7 +45,7 @@ module Holdify
       return FileUtils.rm_f(@path) if @data.empty?
 
       sorted  = @data.sort_by { |k, _| k[/\d+/].to_i }.to_h
-      content = YAML.dump(sorted, line_width: -1)
+      content = YAML.dump(sorted, line_width: 78)
       return if File.exist?(@path) && File.read(@path) == content
 
       File.write(@path, content)

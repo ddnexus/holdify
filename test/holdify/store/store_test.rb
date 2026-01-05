@@ -14,6 +14,7 @@ describe 'Holdify::Store' do
 
   before do
     Holdify.quiet = false
+    Holdify.pretty = false
     FileUtils.rm_f(store_path)
     reset_holdify_state
   end

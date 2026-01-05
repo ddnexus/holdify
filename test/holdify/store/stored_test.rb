@@ -4,6 +4,8 @@ require 'test_helper'
 require 'time'
 
 describe 'holdify/stored' do
+  before { Holdify.pretty = false }
+
   it 'sticks entry with stored value' do
     _('stored_value').must_hold
     assert_hold 'stored_value'

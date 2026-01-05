@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'holdify'
+require 'holdify/pretty'
 
 # Implement the minitest plugin
 module Minitest
@@ -12,6 +13,9 @@ module Minitest
     end
     opts.on '--holdify-quiet', 'Skip the warning on storing a new value' do
       Holdify.quiet = true
+    end
+    opts.on '--holdify-pretty', 'Format the stored values with pretty print' do
+      Holdify.pretty = true
     end
   end
 
@@ -40,10 +44,20 @@ module Minitest
       assertion, message = message, assertion unless assertion.nil? || assertion.is_a?(Symbol)
       expected = @hold.(actual, **)
 
-      if actual.nil?
-        assert_nil expected, message
-      else
-        send(assertion || :assert_equal, expected, actual, message)
+      begin
+        if actual.nil?
+          assert_nil expected, message
+        else
+          send(assertion || :assert_equal, expected, actual, message)
+        end
+      rescue Minitest::Assertion
+        raise unless Holdify.pretty
+
+        diff = Holdify::Pretty.call(expected, actual)
+        raise unless diff
+
+        msg = message ? "#{message}\n#{diff}" : diff
+        raise Minitest::Assertion, msg
       end
 
       if inspect

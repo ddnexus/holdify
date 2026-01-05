@@ -10,7 +10,15 @@ module Holdify
 
   class << self
     attr_accessor :reconcile, :quiet
+    attr_writer :pretty
 
     def stores = @stores ||= {}
+
+    def pretty
+      return @pretty unless @pretty.nil?
+
+      @pretty = $stdout.tty? && !ENV.key?('NO_COLOR') && ENV['TERM'] != 'dumb' &&
+                system('git --version', out: File::NULL, err: File::NULL)
+    end
   end
 end
