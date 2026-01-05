@@ -3,25 +3,28 @@
 require 'test_helper'
 
 describe 'holdify/identical_cases' do
-  def delete_store
-    path = File.expand_path(__FILE__)
-    FileUtils.rm_f("#{path}#{Holdify::CONFIG[:ext]}")
-    Holdify.stores.delete(path)
-    @hold = Holdify::Hold.new(self)
+  it 'creates multiple key store' do
+    expect('stored_value').to_hold
+    expect('stored_value').to_hold
+    expect('stored_value').to_hold
+    expect('stored_value').to_hold
+    expect('stored_value').to_hold
+    expect('stored_value').to_hold
   end
 
-  it 'creates multiple key store' do
-    delete_store
-    assert_hold! 'stored_value'
-    _(@hold.forced).wont_be_empty
-    @hold.forced.clear
-    delete_store
-    expect('stored_value').to_hold
-    expect('stored_value').to_hold
-    expect('stored_value').to_hold
-    expect('stored_value').to_hold
-    expect('stored_value').to_hold
-    expect('stored_value').to_hold
-    # delete_store
+  it 'handles identical lines with different values' do
+    # First run: create
+    assert_hold 'value 1'
+    assert_hold 'value 2'
+    @hold.save
+
+    # Reset memory only (keep file)
+    path = File.expand_path(__FILE__)
+    Holdify.stores.delete(path)
+    @hold = Holdify::Hold.new(self)
+
+    # Second run: verify
+    assert_hold 'value 1'
+    assert_hold 'value 2'
   end
 end

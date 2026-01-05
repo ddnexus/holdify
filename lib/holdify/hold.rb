@@ -9,26 +9,35 @@ module Holdify
       @test    = test
       @path,   = test.method(test.name).source_location
       @store   = Holdify.stores[@path] ||= Store.new(@path)
-      @session = Hash.new { |h, k| h[k] = [] }
-      @forced  = []
-      @added   = []
+      @session = Hash.new { |h, k| h[k] = [] } # { lineno => [values] }
+      @forced  = []                            # [ "file:lineno" ]
+      @added   = []                            # [ "file:lineno" ]
+      @index   = {}                            # { lineno => index }
+      @counts  = Hash.new(0)                   # { id => count }
     end
 
     def call(actual, force: false)
       location = find_location
-      id       = @store.id_at(location.lineno)
-      raise "Could not find holdify statement at line #{location.lineno}" unless id
+      lineno   = location.lineno
+      id       = @store.id_at(lineno)
+      raise "Could not find holdify statement at line #{lineno}" unless id
 
-      @session[id] << actual
-      @forced << "#{location.path}:#{location.lineno}" if force
+      unless @index.key?(lineno)
+        @index[lineno] = @counts[id]
+        @counts[id] += 1
+      end
+      index = @index[lineno]
+
+      @session[lineno] << actual
+      @forced << "#{location.path}:#{lineno}" if force
 
       return actual if force || Holdify.reconcile
 
-      stored = @store.stored(id)
-      index  = @session[id].size - 1
+      stored = @store.stored(id, index)
+      index  = @session[lineno].size - 1
       return stored[index] if stored && index < stored.size
 
-      @added << "#{location.path}:#{location.lineno}"
+      @added << "#{location.path}:#{lineno}"
       actual
     end
 
@@ -36,7 +45,11 @@ module Holdify
       return unless @test.failures.empty?
 
       @added.each { |loc| warn "[holdify] Held new value for #{loc}" } unless Holdify.quiet
-      @session.each { |id, values| @store.update(id, values) }
+      @session.each do |lineno, values|
+        id    = @store.id_at(lineno)
+        index = @index[lineno]
+        @store.update(lineno, id, values, index)
+      end
       @store.save
     end
 
