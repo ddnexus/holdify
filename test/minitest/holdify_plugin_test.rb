@@ -87,6 +87,15 @@ class HoldifyPluginTest < Minitest::Test
     Holdify.quiet = false
   end
 
+  def test_handles_pretty_option_parsing
+    opts = OptionParser.new
+    Minitest.plugin_holdify_options(opts, {})
+    opts.parse!(['--holdify-pretty'])
+    assert Holdify.pretty
+  ensure
+    Holdify.pretty = false
+  end
+
   def test_assert_hold_question_prints_nil
     result = :not_nil
     _out, err = capture_io do
@@ -104,6 +113,63 @@ class HoldifyPluginTest < Minitest::Test
 
     assert_equal 1, test.failures.size
     refute_match(/\[holdify\] =>/, err)
+  end
+
+  def test_assert_hold_uses_pretty_diff
+    Holdify.pretty = true
+    test = Minitest::Test.new('dummy')
+
+    mock_hold = Minitest::Mock.new
+    mock_hold.expect :call, 'expected', ['actual']
+
+    Holdify::Hold.stub :new, ->(_) { mock_hold } do
+      Holdify::Pretty.stub :call, 'PRETTY_DIFF' do
+        e = assert_raises(Minitest::Assertion) do
+          test.assert_hold('actual')
+        end
+        assert_equal 'PRETTY_DIFF', e.message
+      end
+    end
+  ensure
+    Holdify.pretty = false
+  end
+
+  def test_assert_hold_falls_back_when_pretty_diff_returns_nil
+    Holdify.pretty = true
+    test = Minitest::Test.new('dummy')
+
+    mock_hold = Minitest::Mock.new
+    mock_hold.expect :call, 'expected', ['actual']
+
+    Holdify::Hold.stub :new, ->(_) { mock_hold } do
+      Holdify::Pretty.stub :call, nil do
+        e = assert_raises(Minitest::Assertion) do
+          test.assert_hold('actual')
+        end
+        assert_match(/Expected: "expected"/, e.message)
+      end
+    end
+  ensure
+    Holdify.pretty = false
+  end
+
+  def test_assert_hold_uses_pretty_diff_with_custom_message
+    Holdify.pretty = true
+    test = Minitest::Test.new('dummy')
+
+    mock_hold = Minitest::Mock.new
+    mock_hold.expect :call, 'expected', ['actual']
+
+    Holdify::Hold.stub :new, ->(_) { mock_hold } do
+      Holdify::Pretty.stub :call, 'PRETTY_DIFF' do
+        e = assert_raises(Minitest::Assertion) do
+          test.assert_hold('actual', 'custom msg')
+        end
+        assert_equal "custom msg\nPRETTY_DIFF", e.message
+      end
+    end
+  ensure
+    Holdify.pretty = false
   end
   # rubocop:enable Minitest/NonExecutableTestMethod
 end

@@ -14,6 +14,7 @@ describe 'Holdify::Store' do
 
   before do
     Holdify.quiet = false
+    Holdify.pretty = false
     FileUtils.rm_f(store_path)
     reset_holdify_state
   end
@@ -77,5 +78,32 @@ describe 'Holdify::Store' do
     _(File.exist?(store_path)).must_equal false
   ensure
     Holdify.reconcile = false
+  end
+
+  it 'prunes extra identical entries from yaml' do
+    # Simulate a source file with 1 occurrence of "content"
+    source_file = 'test_prune.rb'
+    File.write(source_file, "content\n")
+    sha = Digest::SHA1.hexdigest('content')
+
+    # Simulate a YAML with 2 entries for that SHA (as if it previously had 2 lines)
+    yaml_path = "#{source_file}#{Holdify::CONFIG[:ext]}"
+    data = {
+      "L1 #{sha}" => ['val1'],
+      "L2 #{sha}" => ['val2']
+    }
+    File.write(yaml_path, YAML.dump(data))
+
+    # Initialize store (triggers organize_data)
+    store = Holdify::Store.new(source_file)
+    store.save
+
+    # Verify L2 was removed because source only has 1 occurrence
+    saved_data = YAML.load_file(yaml_path)
+    _(saved_data.size).must_equal 1
+    _(saved_data.keys.first).must_equal "L1 #{sha}"
+  ensure
+    FileUtils.rm_f(source_file)
+    FileUtils.rm_f(yaml_path)
   end
 end

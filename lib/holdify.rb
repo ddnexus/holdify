@@ -5,12 +5,20 @@ require_relative 'holdify/hold'
 
 # Add description
 module Holdify
-  VERSION = '1.0.3'
+  VERSION = '1.1.0'
   CONFIG  = { ext: '.yaml' }.freeze
 
   class << self
     attr_accessor :reconcile, :quiet
+    attr_writer :pretty
 
     def stores = @stores ||= {}
+
+    def pretty
+      return @pretty unless @pretty.nil?
+
+      @pretty = $stdout.tty? && !ENV.key?('NO_COLOR') && ENV['TERM'] != 'dumb' &&
+                system('git --version', out: File::NULL, err: File::NULL)
+    end
   end
 end

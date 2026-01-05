@@ -65,21 +65,27 @@ end
 
 ## Why Holdify?
 
-Most snapshot libraries bind stored values to the test name. If you rename a test, your snapshots break or become orphaned.
-Holdify is different. It holds them inline.
+Most snapshot libraries bind stored values to the test name. If you rename a test, your snapshots break or become orphaned. Holdify is different.
 
 - Bound to Code, Not Names: Holdify binds values to the line number of the assertion. You can rename your test methods or describe blocks freely without breaking your snapshots.
 - One-to-One Feedback: The YAML store mirrors your file structure. An assertion at line 10 in your code corresponds exactly to L10 in the store file. No guessing which snapshot belongs to which test.
 - Surgical Precision:
     - Need to update just one value? Add a ! (e.g., assert_hold!).
     - Need to see what's being generated without changing anything? Add a _? (e.g., assert_hold_?).
-    - No need to regenerate the entire suite or fiddle with global environment variables.
 - Resilient: Even if you move code around, Holdify's smart indexing (based on line content hashing) keeps track of your values, automatically updating line numbers in the store on the next run.
 
 ## Installation
 
 Add `minitest-holdify` to your `Gemfile` (usually in the `:test` group).
 Minitest < 6.0 loads it automatically. For Minitest >= 6.0, add `Minitest.load :holdify` to your `test_helper.rb`.
+
+## Options
+
+Holdify supports the following command-line options:
+
+- `--holdify-reconcile`: Updates all stored values to match the current output. Use with caution! (Implies `--holdify-quiet`).
+- `--holdify-pretty`: Forces "GitHub-style" pretty diffs using Git. This is enabled automatically if Git is installed and running in a terminal.
+- `--holdify-quiet`: Suppresses warnings when new values are stored.
 
 ## How it works
 

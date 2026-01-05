@@ -9,6 +9,7 @@ require 'minitest'
 Minitest.parallel_executor = Minitest::Parallel::Executor.new(0)
 
 require 'minitest/spec'
+require 'minitest/mock'
 Minitest.load :holdify
 
 require 'fileutils'

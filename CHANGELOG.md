@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.1.0
+
+- Fix edge cases for twin lines in the same file
+- Implement pretty failure diffs
+- Update to ruby 4.0.0
+
 ## Version 1.0.3
 
 - Refactor test:
