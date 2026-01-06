@@ -11,11 +11,13 @@ module Minitest
       Holdify.reconcile = true
       Holdify.quiet     = true
     end
-    opts.on '--holdify-quiet', 'Skip the warning on storing a new value' do
-      Holdify.quiet = true
-    end
+
     opts.on '--holdify-pretty', 'Format the stored values with pretty print' do
       Holdify.pretty = true
+    end
+
+    opts.on '--holdify-quiet', 'Skip the warning on storing a new value' do
+      Holdify.quiet = true
     end
   end
 
@@ -68,10 +70,10 @@ module Minitest
       expected
     end
 
-    # Temporarily used to store the actual value, useful for reconciliation of expected changed values
+    # Force store the current value
     def assert_hold!(*, **) = assert_hold(*, **, force: true)
 
-    # Temporarily used for development feedback to print to STDERR the actual value
+    # Print to STDERR the actual value
     def assert_hold?(*, **) = assert_hold(*, **, inspect: true)
   end
 

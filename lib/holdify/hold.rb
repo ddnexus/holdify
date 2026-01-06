@@ -9,50 +9,39 @@ module Holdify
       @test    = test
       @path,   = test.method(test.name).source_location
       @store   = Holdify.stores[@path] ||= Store.new(@path)
-      @session = Hash.new { |h, k| h[k] = [] } # { lineno => [values] }
-      @forced  = []                            # [ "file:lineno" ]
-      @added   = []                            # [ "file:lineno" ]
-      @index   = {}                            # { lineno => index }
-      @counts  = Hash.new(0)                   # { id => count }
+      @session = Hash.new { |h, k| h[k] = [] } # { line => [values] }
+      @forced  = []                            # [ "file:line" ]
+      @added   = []                            # [ "file:line" ]
     end
 
     def call(actual, force: false)
       location = find_location
-      lineno   = location.lineno
-      id       = @store.id_at(lineno)
-      raise "Could not find holdify statement at line #{lineno}" unless id
+      line     = location.lineno
+      raise "Could not find holdify statement at line #{line}" unless @store.sha_at(line)
 
-      unless @index.key?(lineno)
-        @index[lineno] = @counts[id]
-        @counts[id] += 1
-      end
-      index = @index[lineno]
-
-      @session[lineno] << actual
-      @forced << "#{location.path}:#{lineno}" if force
+      @session[line] << actual
+      @forced << "#{@path}:#{line}" if force
 
       return actual if force || Holdify.reconcile
 
-      stored = @store.stored(id, index)
-      index  = @session[lineno].size - 1
-      return stored[index] if stored && index < stored.size
+      # Expected value
+      values = @store.get(line)
+      index  = @session[line].size - 1
+      return values[index] if values && index < values.size
 
-      @added << "#{location.path}:#{lineno}"
+      @added << "#{@path}:#{line}"
       actual
     end
 
     def save
       return unless @test.failures.empty?
 
-      @added.each { |loc| warn "[holdify] Held new value for #{loc}" } unless Holdify.quiet
-      @session.each do |lineno, values|
-        id    = @store.id_at(lineno)
-        index = @index[lineno]
-        @store.update(lineno, id, values, index)
-      end
+      @added.each   { |loc| warn "[holdify] Held new value for #{loc}" } unless Holdify.quiet
+      @session.each { |line, values| @store.set(line, values) }
       @store.save
     end
 
+    # Find the location in the test that triggered the hold
     def find_location
       caller_locations.find do |location|
         next unless location.path == @path

@@ -3,7 +3,7 @@
 require_relative 'holdify/store'
 require_relative 'holdify/hold'
 
-# Add description
+# The container module
 module Holdify
   VERSION = '1.1.0'
   CONFIG  = { ext: '.yaml' }.freeze

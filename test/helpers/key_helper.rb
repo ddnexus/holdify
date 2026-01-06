@@ -8,11 +8,9 @@ module KeyHelper
     end
 
     def call(actual, force: false)
-      location = find_location
-      id       = @store.id_at(location.lineno)
-
-      @store_key = "L#{location.lineno} #{id}" if id
-
+      location   = find_location
+      sha        = @store.sha_at(location.lineno)
+      @store_key = "L#{location.lineno} #{sha}" if sha
       super
     end
 
