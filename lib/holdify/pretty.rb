@@ -55,9 +55,9 @@ module Holdify
             exp_buf << text
             act_buf << text
           when '-'
-            exp_buf << RED_FG << text << RESET
+            exp_buf << "#{RED_FG}#{text}#{RESET}"
           when '+'
-            act_buf << GREEN_FG << text << RESET
+            act_buf << "#{GREEN_FG}#{text}#{RESET}"
           when '~'
             flush_buffers(output, exp_buf, act_buf)
             exp_buf.clear
@@ -81,7 +81,7 @@ module Holdify
 
       def create_tempfile(obj)
         Tempfile.new(%w[holdify .yaml]).tap do |file|
-          file.write(YAML.dump(obj, line_width: 78)) # Ensure 80 columns (including gutter)
+          file.write(YAML.dump(obj, line_width: 78)) # Ensure 80 columns (including pretty gutter)
           file.flush
         end
       end

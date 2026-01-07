@@ -69,4 +69,11 @@ describe 'holdify/stored' do
 
     @hold.forced.clear
   end
+
+  it 'stores two tween lines in two keys' do
+    result = 'val 1'
+    assert_hold(result)
+    result = 'val 2'
+    assert_hold(result)
+  end
 end

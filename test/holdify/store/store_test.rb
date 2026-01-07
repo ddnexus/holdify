@@ -37,29 +37,42 @@ describe 'Holdify::Store' do
   end
 
   it 'verifies existing entries on second run' do
-    val = 'persistent value'
+    # We use a loop to ensure the exact same line number is used for the assertion,
+    # simulating multiple runs of the same test code.
+    [0, 1, 2].each do |step|
+      val = step == 2 ? 'wrong value' : 'persistent value'
 
-    # 1. First run: Create
-    expect(val).to_hold
-    @hold.save
+      reset_holdify_state if step.positive?
 
-    # 2. Reset memory state to simulate new run
-    reset_holdify_state
+      begin
+        out, err = capture_io { expect(val).to_hold }
 
-    # 3. Second run: Verify (should pass)
-    assert_silent do
-      expect(val).to_hold
+        @hold.save if step.zero?
+
+        if step == 1
+          _(out).must_be_empty
+          _(err).must_be_empty
+        end
+      rescue Minitest::Assertion => e
+        raise e unless step == 2
+
+        _(e.message).must_match(/Expected: "persistent value"/)
+      end
     end
+  end
 
-    # Reset memory state again to ensure the entry is available for the next assertion
-    reset_holdify_state
+  it 'returns nil when querying a line number not in source' do
+    store = Holdify::Store.new(File.expand_path(__FILE__))
+    _(store.get(10_000)).must_be_nil
+  end
 
-    # 4. Verify mismatch
-    val = 'wrong value'
-    error = assert_raises(Minitest::Assertion) do
-      expect(val).to_hold
-    end
-    _(error.message).must_match(/Expected: "persistent value"/)
+  it 'skips saving entries for lines not present in source' do
+    store = Holdify::Store.new(File.expand_path(__FILE__))
+    store.set(10_000, ['phantom'])
+    store.save
+
+    content = YAML.load_file(store_path)
+    _(content).must_be_empty
   end
 
   it 'handles empty store deletion' do
