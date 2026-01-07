@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 1.1.1
+
+- Improve and simplify internal structure and class interactions
+
 ## Version 1.1.0
 
 - Fix edge cases for twin lines in the same file
