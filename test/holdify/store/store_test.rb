@@ -97,13 +97,13 @@ describe 'Holdify::Store' do
     # Simulate a source file with 1 occurrence of "content"
     source_file = 'test_prune.rb'
     File.write(source_file, "content\n")
-    sha = Digest::SHA1.hexdigest('content')
+    xxh = XXhash.xxh32('content')
 
-    # Simulate a YAML with 2 entries for that SHA (as if it previously had 2 lines)
+    # Simulate a YAML with 2 entries for that id (as if it previously had 2 lines)
     yaml_path = "#{source_file}#{Holdify::CONFIG[:ext]}"
     data = {
-      "L1 #{sha}" => ['val1'],
-      "L2 #{sha}" => ['val2']
+      "L1 #{xxh}" => ['val1'],
+      "L2 #{xxh}" => ['val2']
     }
     File.write(yaml_path, YAML.dump(data))
 
@@ -114,7 +114,7 @@ describe 'Holdify::Store' do
     # Verify L2 was removed because source only has 1 occurrence
     saved_data = YAML.load_file(yaml_path)
     _(saved_data.size).must_equal 1
-    _(saved_data.keys.first).must_equal "L1 #{sha}"
+    _(saved_data.keys.first).must_equal "L1 #{xxh}"
   ensure
     FileUtils.rm_f(source_file)
     FileUtils.rm_f(yaml_path)

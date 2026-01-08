@@ -17,7 +17,7 @@ module Holdify
     def call(actual, force: false)
       location = find_location
       line     = location.lineno
-      raise "Could not find holdify statement at line #{line}" unless @store.sha_at(line)
+      raise "Could not find holdify statement at line #{line}" unless @store.xxh_at(line)
 
       @session[line] << actual
       @forced << "#{@path}:#{line}" if force

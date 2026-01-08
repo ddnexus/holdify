@@ -8,6 +8,7 @@ gem 'irb'
 gem 'mutex_m'
 gem 'rake'
 gem 'reline'
+gem 'xxhash'
 
 group :test do
   gem 'minitest'

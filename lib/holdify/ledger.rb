@@ -22,7 +22,7 @@ module Holdify
 
       output = {}
       @data.keys.sort.each do |line|
-        sha = @source.sha_at(line)
+        sha = @source.xxh_at(line)
         next unless sha
 
         output["L#{line} #{sha}"] = @data[line]
