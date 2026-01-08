@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require 'digest/sha1'
+require 'xxhash'
 
 module Holdify
   # Represents the current state of the source file
   class Source
     def initialize(path) = (@line_sha, @sha_lines = parse(path))
 
-    def sha_at(line) = @line_sha[line]
+    def xxh_at(line) = @line_sha[line]
 
     def lines_with(sha) = @sha_lines[sha]
 
@@ -21,7 +21,7 @@ module Holdify
         content = text.strip
         next if content.empty?
 
-        sha = Digest::SHA1.hexdigest(content)
+        sha = XXhash.xxh32(content).to_s
         line_sha[line] = sha
         sha_lines[sha] << line
       end

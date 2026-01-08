@@ -3,6 +3,7 @@ PATH
   specs:
     minitest-holdify (1.1.1)
       minitest (>= 5.0.0)
+      xxhash (>= 0.7.0)
 
 GEM
   remote: https://rubygems.org/
@@ -92,6 +93,7 @@ GEM
     unicode-display_width (3.2.0)
       unicode-emoji (~> 4.1)
     unicode-emoji (4.2.0)
+    xxhash (0.7.0)
 
 PLATFORMS
   x86_64-linux
@@ -112,6 +114,7 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rake
   simplecov
+  xxhash
 
 BUNDLED WITH
   4.0.3

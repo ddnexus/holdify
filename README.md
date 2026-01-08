@@ -106,8 +106,6 @@ When your code changes intentionally, you need to reconcile the held values with
     ```sh
     rake test TESTOPTS=--holdify-reconcile
     ```
-    > [!WARNING]
-    > Only use this when you are sure *all* new outputs are correct: everything will be overwritten!
 
 2.  **Delete:** Delete the specific `*.yaml` file(s) and re-run the test(s). Ideally suited for when you want to reset specific test files _(and deleting is easier than using the ENV variable)_.
 
@@ -116,8 +114,8 @@ When your code changes intentionally, you need to reconcile the held values with
   - `must_hold` &rarr; `must_hold!`
   - `to_hold` &rarr; `to_hold!`
 
-    > [!WARNING]
-    > This stores the new value immediately but **raises an error** intentionally. This ensures you don't accidentally commit the `!` method. Revert to the standard method to pass the test.
+> [!WARNING]
+> This stores the new value immediately but **raises an error** intentionally. This ensures you don't accidentally commit the `!` method. Revert to the standard method to pass the test.
 
 ### Inspecting Values
 
@@ -149,7 +147,8 @@ assert_hold actual, 'Data consistency failed'
 _(actual).must_hold 'Data consistency failed'
 ```
 
-**Note:** The custom assertion must be a symbol (e.g., `:assert_something`) not an expectation (e.g., `:must_something`). The order of arguments (assertion symbol vs message) is flexible.
+> [!NOTE]
+> The custom assertion must be a symbol (e.g., `:assert_something`) not an expectation (e.g., `:must_something`). The order of arguments (assertion symbol vs message) is flexible.
 
 ### Store Format
 
@@ -163,11 +162,11 @@ Holdify stores values in a standard YAML file named after your test file (e.g., 
 ```yaml
 ---
 # Simple assertion at line 10
-L10 8a93...:
+L10 452088998:
 - "simple value"
 
 # Loop executing line 15 twice
-L15 2b4c...:
+L15 3328325135:
 - "iteration 1"
 - "iteration 2"
 ```
@@ -186,7 +185,7 @@ end
 The store file will look like this:
 
 ```yaml
-L10 8a93...:
+L10 567664830:
 - :permissions: 
   - :read
   - :write

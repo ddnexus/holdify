@@ -17,4 +17,5 @@ Gem::Specification.new do |s|
                     'changelog_uri'         => 'https://github.com/ddnexus/holdify/blob/master/CHANGELOG.md' }
   s.required_ruby_version = '>= 3.2'
   s.add_dependency 'minitest', '>= 5.0.0'
+  s.add_dependency 'xxhash', '>= 0.7.0'
 end
