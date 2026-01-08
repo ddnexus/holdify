@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## Version 1.1.2
+
+- Refactor store files:
+  - Replace sha1 hash with xxHash
+  - Add test/store/updates generator
+
 ## Version 1.1.1
 
 - Improve and simplify internal structure and class interactions
