@@ -162,11 +162,11 @@ Holdify stores values in a standard YAML file named after your test file (e.g., 
 ```yaml
 ---
 # Simple assertion at line 10
-L10 452088998:
+L10 df67...:
 - "simple value"
 
 # Loop executing line 15 twice
-L15 3328325135:
+L15 4b0a...:
 - "iteration 1"
 - "iteration 2"
 ```
@@ -185,7 +185,7 @@ end
 The store file will look like this:
 
 ```yaml
-L10 567664830:
+L10 ac3b...:
 - :permissions: 
   - :read
   - :write

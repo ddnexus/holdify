@@ -14,7 +14,7 @@ module Holdify
       @ledger = Ledger.new(path, @source)
     end
 
-    def_delegator  :@source, :xxh_at
-    def_delegators :@ledger, :get, :set, :save
+    def_delegator  :@source, :xxh
+    def_delegators :@ledger, :get, :set, :persist
   end
 end

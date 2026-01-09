@@ -8,37 +8,37 @@ module Holdify
     def initialize(test)
       @test    = test
       @path,   = test.method(test.name).source_location
-      @store   = Holdify.stores[@path] ||= Store.new(@path)
+      @store   = Holdify.stores(@path)
       @session = Hash.new { |h, k| h[k] = [] } # { line => [values] }
-      @forced  = []                            # [ "file:line" ]
-      @added   = []                            # [ "file:line" ]
+      @forced  = []                            # [ line ]
+      @added   = []                            # [ line ]
     end
 
     def call(actual, force: false)
       location = find_location
       line     = location.lineno
-      raise "Could not find holdify statement at line #{line}" unless @store.xxh_at(line)
+      raise "Could not find holdify statement at line #{line}" unless @store.xxh(line)
 
-      @session[line] << actual
-      @forced << "#{@path}:#{line}" if force
+      @forced << line if force
 
-      return actual if force || Holdify.reconcile
-
-      # Expected value
       values = @store.get(line)
-      index  = @session[line].size - 1
-      return values[index] if values && index < values.size
+      index  = @session[line].size
+      value  = if force || Holdify.reconcile
+                 actual
+               elsif values && index < values.size
+                 values[index]
+               else
+                 @added << line
+                 actual
+               end
 
-      @added << "#{@path}:#{line}"
-      actual
+      @session[line] << value
+      value
     end
 
     def save
-      return unless @test.failures.empty?
-
-      @added.each   { |loc| warn "[holdify] Held new value for #{loc}" } unless Holdify.quiet
+      @added.each   { |line| warn "[holdify] Held new value for #{@path}:#{line}" } unless Holdify.quiet
       @session.each { |line, values| @store.set(line, values) }
-      @store.save
     end
 
     # Find the location in the test that triggered the hold

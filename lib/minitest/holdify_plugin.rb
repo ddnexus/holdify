@@ -5,6 +5,11 @@ require 'holdify/pretty'
 
 # Implement the minitest plugin
 module Minitest
+  # Register the after_run hook to persist all data
+  def self.plugin_holdify_init(_options)
+    Minitest.after_run { Holdify.persist_all! }
+  end
+
   # Set the Holdify options
   def self.plugin_holdify_options(opts, _options)
     opts.on '--holdify-reconcile', 'Reconcile the held values with the new ones' do
@@ -26,12 +31,15 @@ module Minitest
     # Ensure store is tidied and saved after the test runs
     def before_teardown
       super
-      @hold&.save
-      return unless @hold&.forced&.any? && failures.empty?
+      return unless failures.empty? && @hold
 
+      @hold.save
+      return unless @hold.forced.any?
+
+      path, = method(name).source_location
       msg = <<~MSG.chomp
         [holdify] the value has been stored: remove the "!" suffix to pass the test
-        #{@hold.forced.uniq.map { |l| "  #{l}" }.join("\n")}
+        #{@hold.forced.uniq.map { |l| "  #{path}:#{l}" }.join("\n")}
       MSG
       raise Minitest::Assertion, msg
     end

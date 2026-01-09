@@ -21,26 +21,26 @@ module UpdateHelper
       end
 
       after do
-        # 1. VERIFY
-        _(File.exist?(after_change_path)).must_equal true, "Missing expectation file: #{after_change_path}"
-        _(File.exist?(store_path)).must_equal true, 'Store file must exist'
+        Holdify.stores(test_path).persist
 
-        actual_store       = YAML.unsafe_load_file(store_path)
-        after_change_store = YAML.unsafe_load_file(after_change_path)
+        begin
+          # 1. VERIFY
+          _(File.exist?(after_change_path)).must_equal true, "Missing expectation file: #{after_change_path}"
+          _(File.exist?(store_path)).must_equal true, 'Store file must exist'
 
-        _(actual_store).must_equal after_change_store
+          actual_store       = YAML.unsafe_load_file(store_path)
+          after_change_store = YAML.unsafe_load_file(after_change_path)
 
-        # If content is identical to original, verify file wasn't touched (mtime check)
-        if @_original_data && (YAML.unsafe_load(@_original_data) == after_change_store)
-          _(File.mtime(store_path)).must_equal @_original_mtime
-        end
-
-        # 2. RESTORE
-        if @_original_data
-          File.write(store_path, @_original_data)
-          File.utime(@_original_mtime, @_original_mtime, store_path) if @_original_mtime
-        else
-          FileUtils.rm_f(store_path)
+          _(actual_store).must_equal after_change_store
+        ensure
+          # 2. RESTORE
+          if @_original_data
+            File.write(store_path, @_original_data)
+            File.utime(@_original_mtime, @_original_mtime, store_path) if @_original_mtime
+          else
+            FileUtils.rm_f(store_path)
+          end
+          Holdify.stores.delete(test_path)
         end
       end
     end

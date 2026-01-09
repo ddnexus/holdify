@@ -1,32 +1,32 @@
 # frozen_string_literal: true
 
-require 'xxhash'
+require 'digest/xxhash'
 
 module Holdify
   # Represents the current state of the source file
   class Source
-    def initialize(path) = (@line_sha, @sha_lines = parse(path))
+    def initialize(path) = (@line_xxh, @xxh_lines = parse(path))
 
-    def xxh_at(line) = @line_sha[line]
+    def xxh(line) = @line_xxh[line]
 
-    def lines_with(sha) = @sha_lines[sha]
+    def lines(xxh) = @xxh_lines[xxh]
 
     private
 
     def parse(path)
-      line_sha  = {}
-      sha_lines = Hash.new { |h, k| h[k] = [] }
+      line_xxh  = {}
+      xxh_lines = Hash.new { |h, k| h[k] = [] }
 
       File.foreach(path).with_index(1) do |text, line|
         content = text.strip
         next if content.empty?
 
-        sha = XXhash.xxh32(content).to_s
-        line_sha[line] = sha
-        sha_lines[sha] << line
+        xxh            = Digest::XXH3_64bits.hexdigest(content)
+        line_xxh[line] = xxh
+        xxh_lines[xxh] << line
       end
 
-      [line_sha, sha_lines]
+      [line_xxh, xxh_lines]
     end
   end
 end

@@ -9,28 +9,26 @@ module Holdify
     def initialize(path, source)
       @path   = "#{path}#{CONFIG[:ext]}"
       @source = source
-      File.delete(@path) if Holdify.reconcile && File.exist?(@path)
-      @data = load_and_align
+      FileUtils.rm_f(@path) if Holdify.reconcile
+      @data = File.exist?(@path) ? load_and_align : {}
     end
 
     def get(line) = @data[line]
 
     def set(line, values) = (@data[line] = values)
 
-    def save
+    def persist
       return FileUtils.rm_f(@path) if @data.empty?
 
       output = {}
       @data.keys.sort.each do |line|
-        sha = @source.xxh_at(line)
-        next unless sha
+        xxh = @source.xxh(line)
+        next unless xxh
 
-        output["L#{line} #{sha}"] = @data[line]
+        output["L#{line} #{xxh}"] = @data[line]
       end
 
       content = YAML.dump(output, line_width: 78) # Ensure 80 columns (including pretty gutter)
-      return if File.exist?(@path) && File.read(@path) == content
-
       File.write(@path, content)
     end
 
@@ -38,19 +36,19 @@ module Holdify
 
     def load_and_align
       {}.tap do |aligned|
-        raw_data = (File.exist?(@path) && YAML.unsafe_load_file(@path)) || {}
-        raw_data.group_by { |k, _| k.split.last }.each do |sha, entries|
-          target_lines = @source.lines_with(sha)
-          next if target_lines.empty?
+        data = YAML.unsafe_load_file(@path) || {}
+        data.group_by { |k, _| k.split.last }.each do |xxh, entries|
+          lines = @source.lines(xxh)
+          next if lines.empty?
 
-          # Old data
-          candidates   = entries.map { |key, values| { line: key[/\d+/].to_i, values: values } }
-          exact, moved = candidates.partition { |c| target_lines.include?(c[:line]) }
+          # Position of the held lines compared to the source lines
+          stayed, moved = entries.map { |key, values| { line: key[/\d+/].to_i, values: values } }
+                                 .partition { |c| lines.include?(c[:line]) }
           moved.sort_by! { |c| c[:line] }
 
-          # New aligned data
-          target_lines.each do |line|
-            match = exact.find { |c| c[:line] == line } || moved.shift
+          # Align lines
+          lines.each do |line|
+            match         = stayed.find { |c| c[:line] == line } || moved.shift
             aligned[line] = match[:values] if match
           end
         end

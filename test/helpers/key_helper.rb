@@ -9,7 +9,7 @@ module KeyHelper
 
     def call(actual, force: false)
       location   = find_location
-      xxh        = @store.xxh_at(location.lineno)
+      xxh        = @store.xxh(location.lineno)
       @store_key = "L#{location.lineno} #{xxh}" if xxh
       super
     end

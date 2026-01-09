@@ -4,11 +4,11 @@ source 'https://rubygems.org'
 
 gemspec
 
+gem 'digest-xxhash'
 gem 'irb'
 gem 'mutex_m'
 gem 'rake'
 gem 'reline'
-gem 'xxhash'
 
 group :test do
   gem 'minitest'

@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'fileutils'
-ENV['SKIP_COVERAGE'] = 'true'
 
 GENERATOR_DIR = __dir__
 CASES_DIR     = File.join(GENERATOR_DIR, 'cases')

@@ -21,6 +21,7 @@ describe 'Holdify::Store' do
 
   after do
     FileUtils.rm_f(store_path)
+    Holdify.stores.delete(File.expand_path(__FILE__))
   end
 
   it 'creates the store and the entry' do
@@ -28,6 +29,7 @@ describe 'Holdify::Store' do
       expect('a new value').to_hold
       @hold.save
     end
+    Holdify.stores(File.expand_path(__FILE__)).persist
     key = last_key
     _(err).must_match(/\[holdify\] Held new value for .*store_test.rb/)
 
@@ -47,7 +49,10 @@ describe 'Holdify::Store' do
       begin
         out, err = capture_io { expect(val).to_hold }
 
-        @hold.save if step.zero?
+        if step.zero?
+          @hold.save
+          Holdify.stores(File.expand_path(__FILE__)).persist
+        end
 
         if step == 1
           _(out).must_be_empty
@@ -69,7 +74,7 @@ describe 'Holdify::Store' do
   it 'skips saving entries for lines not present in source' do
     store = Holdify::Store.new(File.expand_path(__FILE__))
     store.set(10_000, ['phantom'])
-    store.save
+    store.persist
 
     content = YAML.load_file(store_path)
     _(content).must_be_empty
@@ -78,7 +83,7 @@ describe 'Holdify::Store' do
   it 'handles empty store deletion' do
     File.write(store_path, "---\n")
     store = Holdify::Store.new(File.expand_path(__FILE__))
-    store.save
+    store.persist
     _(File.exist?(store_path)).must_equal false
   end
 
@@ -97,7 +102,7 @@ describe 'Holdify::Store' do
     # Simulate a source file with 1 occurrence of "content"
     source_file = 'test_prune.rb'
     File.write(source_file, "content\n")
-    xxh = XXhash.xxh32('content')
+    xxh = Digest::XXH3_64bits.hexdigest('content')
 
     # Simulate a YAML with 2 entries for that id (as if it previously had 2 lines)
     yaml_path = "#{source_file}#{Holdify::CONFIG[:ext]}"
@@ -109,7 +114,7 @@ describe 'Holdify::Store' do
 
     # Initialize store (triggers organize_data)
     store = Holdify::Store.new(source_file)
-    store.save
+    store.persist
 
     # Verify L2 was removed because source only has 1 occurrence
     saved_data = YAML.load_file(yaml_path)
