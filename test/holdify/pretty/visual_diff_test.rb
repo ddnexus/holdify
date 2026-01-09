@@ -19,7 +19,7 @@ class VisualDiffTest < Minitest::Test
         pool: 5,
         timeout: 5000
       },
-      description: "Long long long long long long long long prefix. Holdify allows you to store objects and compare them in future runs. It uses git for diffs. This string is very very very very very very very very very very very very very very very very very long."
+      description: "Holdify allows you to automatically hold objects and compare them in future runs. It uses git for diffs."
     }
 
     # This assertion will fail if the stored file is manually modified to differ from 'actual'.

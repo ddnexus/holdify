@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'simplecov' unless ENV['SKIP_COVERAGE']
+require 'simplecov' if ENV['CI'] || ENV['COVERAGE']
 
 $LOAD_PATH.unshift __dir__
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)

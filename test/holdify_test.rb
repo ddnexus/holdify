@@ -72,4 +72,14 @@ describe 'holdify' do
       end
     end
   end
+
+  describe 'persist_all!' do
+    it 'handles nil stores' do
+      stores = Holdify.instance_variable_get(:@stores)
+      Holdify.instance_variable_set(:@stores, nil)
+      assert_nil Holdify.persist_all!
+    ensure
+      Holdify.instance_variable_set(:@stores, stores)
+    end
+  end
 end

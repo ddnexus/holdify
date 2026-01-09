@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'minitest-holdify'
-  s.version     = '1.1.2'
+  s.version     = '1.1.3'
   s.authors     = ['Domizio Demichelis']
   s.email       = ['dd.nexus@gmail.com']
   s.summary     = 'Hardcoded values suck! Holdify them.'
@@ -16,6 +16,6 @@ Gem::Specification.new do |s|
                     'bug_tracker_uri'       => 'https://github.com/ddnexus/holdify/issues',
                     'changelog_uri'         => 'https://github.com/ddnexus/holdify/blob/master/CHANGELOG.md' }
   s.required_ruby_version = '>= 3.2'
+  s.add_dependency 'digest-xxhash', '>= 0.2.9'
   s.add_dependency 'minitest', '>= 5.0.0'
-  s.add_dependency 'xxhash', '>= 0.7.0'
 end

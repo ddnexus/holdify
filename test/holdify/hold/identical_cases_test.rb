@@ -17,6 +17,7 @@ describe 'holdify/identical_cases' do
     assert_hold 'value 1'
     assert_hold 'value 2'
     @hold.save
+    Holdify.stores(File.expand_path(__FILE__)).persist
 
     # Reset memory only (keep file)
     path = File.expand_path(__FILE__)

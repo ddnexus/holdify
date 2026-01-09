@@ -15,11 +15,13 @@ describe 'Holdify Assertions' do
 
   after do
     FileUtils.rm_f(store_path)
+    Holdify.stores.delete(File.expand_path(__FILE__))
   end
 
   it 'handles nil values' do
     assert_hold nil
     @hold.save
+    Holdify.stores(File.expand_path(__FILE__)).persist
     key = last_key
 
     content = YAML.load_file(store_path)
@@ -31,6 +33,7 @@ describe 'Holdify Assertions' do
       assert_hold 'block_val'
     end
     @hold.save
+    Holdify.stores(File.expand_path(__FILE__)).persist
     key = last_key
 
     content = YAML.load_file(store_path)
@@ -43,6 +46,7 @@ describe 'Holdify Assertions' do
     assert_hold 'b'
     key_b = last_key
     @hold.save
+    Holdify.stores(File.expand_path(__FILE__)).persist
 
     content = YAML.load_file(store_path)
     _(content[key_a]).must_equal ['a']

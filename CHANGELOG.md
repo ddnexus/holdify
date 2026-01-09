@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.1.3
+
+- Optimize performance:
+  - Minimize IO operations
+  - Use faster XXH3 hash algorithm
+  - Improve handling of actual/expected values
+  - Simplify code
+
 ## Version 1.1.2
 
 - Refactor store files:

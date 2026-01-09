@@ -1,16 +1,14 @@
 ---
-L27 1324916974:
+L27 653e11aeec38dce2:
 - :app: Holdify
-  :version: 1.0.4
+  :version: 1.1.1
   :features:
   - store
   - pretty_diff
   :config:
     :adapter: sqlite
-    :pool: 5
+    :pool: 10
     :timeout: 5000
   :description: >-
-    Long long long long long long long long prefix. Holdify allows you to store
-    objects and compare them in future runs. It uses git for diffs. This string
-    is very very very very very very very very very very very very very very very
-    very very long.
+    Holdify allows you to store objects and compare them in future runs. It uses
+    git for diffs.
