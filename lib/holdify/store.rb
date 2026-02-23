@@ -15,6 +15,6 @@ module Holdify
     end
 
     def_delegator  :@source, :xxh
-    def_delegators :@ledger, :get, :set, :persist
+    def_delegators :@ledger, :get, :set, :persist, :lookup
   end
 end

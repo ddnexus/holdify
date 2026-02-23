@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## Version 1.2.0
+
+- Update run configurations
+- Add tests for the new features
+- 💎 Improve usability:
+  - Add failure headers linked to yaml file and test line
+  - Add failure message and diff feedback, with direct colored word diff and line references
+  - Remove pretty, now managed internally by Holdify.git and Holdify.color
+- Fix non-core issues
+- Update Gemfile
+
 ## Version 1.1.3
 
 - Optimize performance:

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'holdify'
-require 'holdify/pretty'
+require 'holdify/failure'
 
 # Implement the minitest plugin
 module Minitest
@@ -15,10 +15,6 @@ module Minitest
     opts.on '--holdify-reconcile', 'Reconcile the held values with the new ones' do
       Holdify.reconcile = true
       Holdify.quiet     = true
-    end
-
-    opts.on '--holdify-pretty', 'Format the stored values with pretty print' do
-      Holdify.pretty = true
     end
 
     opts.on '--holdify-quiet', 'Skip the warning on storing a new value' do
@@ -37,10 +33,9 @@ module Minitest
       return unless @hold.forced.any?
 
       path, = method(name).source_location
-      msg = <<~MSG.chomp
-        [holdify] the value has been stored: remove the "!" suffix to pass the test
-        #{@hold.forced.uniq.map { |l| "  #{path}:#{l}" }.join("\n")}
-      MSG
+      msg   = +%([holdify] the value has been stored: remove the "!" suffix to pass the test\n)
+      msg  << @hold.forced.uniq.map { |line| "  #{path}:#{line}" }.join("\n")
+
       raise Minitest::Assertion, msg
     end
   end
@@ -60,13 +55,12 @@ module Minitest
         else
           send(assertion || :assert_equal, expected, actual, message)
         end
-      rescue Minitest::Assertion
-        raise unless Holdify.pretty
+      rescue Minitest::Assertion => e
+        location = @hold.find_location
+        metadata = @hold.store.lookup(location.lineno, @hold.current_index(location.lineno))
+        hold_msg = Holdify::Failure.new(expected, actual, e.message, metadata:, location:).message
 
-        diff = Holdify::Pretty.call(expected, actual)
-        raise unless diff
-
-        msg = message ? "#{message}\n#{diff}" : diff
+        msg = message ? "#{message}\n#{hold_msg}" : hold_msg
         raise Minitest::Assertion, msg
       end
 

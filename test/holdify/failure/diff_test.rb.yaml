@@ -1,0 +1,21 @@
+---
+L15 51898a228aead05f:
+- - one
+  - two
+  - three
+L38 55a06e119c6548b1:
+- :array:
+  - line1
+  - line2
+  - line3
+- :app: Holdify
+  :version: 1.1.1
+  :features:
+  - store
+  - pretty_diff
+  :config:
+    :adapter: sqlite
+    :pool: 10
+    :timeout: 5000
+  :description: Holdify allows you to easily hold objects and compare them in future
+    runs. It uses git for diffs.

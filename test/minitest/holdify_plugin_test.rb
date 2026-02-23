@@ -87,15 +87,6 @@ class HoldifyPluginTest < Minitest::Test
     Holdify.quiet = false
   end
 
-  def test_handles_pretty_option_parsing
-    opts = OptionParser.new
-    Minitest.plugin_holdify_options(opts, {})
-    opts.parse!(['--holdify-pretty'])
-    assert Holdify.pretty
-  ensure
-    Holdify.pretty = false
-  end
-
   def test_assert_hold_question_prints_nil
     result = :not_nil
     _out, err = capture_io do
@@ -116,60 +107,55 @@ class HoldifyPluginTest < Minitest::Test
   end
 
   def test_assert_hold_uses_pretty_diff
-    Holdify.pretty = true
     test = Minitest::Test.new('dummy')
+
+    mock_store = Object.new
+    def mock_store.lookup(_, _) = { path: 'path', line: 1, key: 'key' }
 
     mock_hold = Minitest::Mock.new
     mock_hold.expect :call, 'expected', ['actual']
+    mock_hold.expect :find_location, Struct.new(:lineno).new(1)
+    mock_hold.expect :current_index, 0, [1]
+    mock_hold.expect :store, mock_store
 
-    Holdify::Hold.stub :new, ->(_) { mock_hold } do
-      Holdify::Pretty.stub :call, 'PRETTY_DIFF' do
+    mock_diff = Minitest::Mock.new
+    mock_diff.expect :message, 'DIFF'
+
+    Holdify::Hold.stub :new, proc { mock_hold } do
+      Holdify::Failure.stub :new, mock_diff do
         e = assert_raises(Minitest::Assertion) do
           test.assert_hold('actual')
         end
-        assert_equal 'PRETTY_DIFF', e.message
+        assert_equal 'DIFF', e.message
       end
     end
-  ensure
-    Holdify.pretty = false
-  end
-
-  def test_assert_hold_falls_back_when_pretty_diff_returns_nil
-    Holdify.pretty = true
-    test = Minitest::Test.new('dummy')
-
-    mock_hold = Minitest::Mock.new
-    mock_hold.expect :call, 'expected', ['actual']
-
-    Holdify::Hold.stub :new, ->(_) { mock_hold } do
-      Holdify::Pretty.stub :call, nil do
-        e = assert_raises(Minitest::Assertion) do
-          test.assert_hold('actual')
-        end
-        assert_match(/Expected: "expected"/, e.message)
-      end
-    end
-  ensure
-    Holdify.pretty = false
+    mock_diff.verify
   end
 
   def test_assert_hold_uses_pretty_diff_with_custom_message
-    Holdify.pretty = true
     test = Minitest::Test.new('dummy')
+
+    mock_store = Object.new
+    def mock_store.lookup(_, _) = { path: 'path', line: 1, key: 'key' }
 
     mock_hold = Minitest::Mock.new
     mock_hold.expect :call, 'expected', ['actual']
+    mock_hold.expect :find_location, Struct.new(:lineno).new(1)
+    mock_hold.expect :current_index, 0, [1]
+    mock_hold.expect :store, mock_store
 
-    Holdify::Hold.stub :new, ->(_) { mock_hold } do
-      Holdify::Pretty.stub :call, 'PRETTY_DIFF' do
+    mock_diff = Minitest::Mock.new
+    mock_diff.expect :message, 'DIFF'
+
+    Holdify::Hold.stub :new, proc { mock_hold } do
+      Holdify::Failure.stub :new, mock_diff do
         e = assert_raises(Minitest::Assertion) do
           test.assert_hold('actual', 'custom msg')
         end
-        assert_equal "custom msg\nPRETTY_DIFF", e.message
+        assert_equal "custom msg\nDIFF", e.message
       end
     end
-  ensure
-    Holdify.pretty = false
+    mock_diff.verify
   end
   # rubocop:enable Minitest/NonExecutableTestMethod
 end

@@ -3,7 +3,7 @@
 require 'test_helper'
 require 'yaml'
 
-describe 'Holdify::Store' do
+describe 'Holdify::Store Specs' do
   let(:store_path) { "#{File.expand_path(__FILE__)}#{Holdify::CONFIG[:ext]}" }
 
   def reset_holdify_state
@@ -14,7 +14,7 @@ describe 'Holdify::Store' do
 
   before do
     Holdify.quiet = false
-    Holdify.pretty = false
+    Holdify.config[:git] = false
     FileUtils.rm_f(store_path)
     reset_holdify_state
   end

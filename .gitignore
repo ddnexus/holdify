@@ -1,7 +1,6 @@
 /.bundle/
-/.devcontainer/
+/vendor/bundle/
 /.idea/
-/.vscode/
 /coverage/
 /pkg/
 /tmp/

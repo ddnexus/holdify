@@ -19,7 +19,7 @@ describe 'holdify/equality' do
     assert_hold 'mixed_CASE', :assert_equal_insensitive
   end
 
-  describe Holdify do
+  describe 'Holdify Specs' do
     it 'sticks nested describe' do
       value = 'a value'
       expect(value).to_hold

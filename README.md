@@ -15,7 +15,7 @@ Stop maintaining large expected values in your test/fixture files! Hold them aut
 ```ruby
 it 'generates the series_nav' do
   assert_equal("<nav class=\"pagy series-nav\" aria-label=\"Pages\"><a role=\"link\" aria-disabled=\"true\"
- aria-label=\"Previous\">&lt;</a><a role=\"link\" aria-disabled=\"true\" aria-current=\"page\">1</a><a 
+ aria-label=\"Previous\">&lt;</a><a role=\"link\" aria-disabled=\"true\" aria-current=\"page\">1</a><a
 href=\"/path?example=123&page=2\" rel=\"next\">2</a><a href=\"/path?example=123&page=3\">3</a><a href=\"/path?
 example=123&page=4\">4</a><a href=\"/path?example=123&page=5\">5</a><a href=\"/path?example=123&page=6\">
 6</a><a href=\"/path?example=123&page=7\">7</a><a href=\"/path?example=123&page=8\">8</a><a href=\"/path?
@@ -25,9 +25,9 @@ example=123&page=50\">50</a><a href=\"/path?example=123&page=2\" rel=\"next\" ar
 end
 
 it 'generates the data_hash' do
-  assert_equal({ url_template: "/path?example=123&page=P ", first_url: "/path?example=123", 
-    current_url: "/path?example=123&page=1", page_url: "/path?example=123&page=1", 
-    next_url: "/path?example=123&page=2", last_url: "/path?example=123&page=50", count: 1000, page: 1, 
+  assert_equal({ url_template: "/path?example=123&page=P ", first_url: "/path?example=123",
+    current_url: "/path?example=123&page=1", page_url: "/path?example=123&page=1",
+    next_url: "/path?example=123&page=2", last_url: "/path?example=123&page=50", count: 1000, page: 1,
     limit: 20, last: 50, in: 20, from: 1, to: 20, next: 2, options: { limit: 20, limit_key: "limit",
     page_key: "page", page: 1, count: 1000 } }, @pagy.data_hash)
 end
@@ -84,7 +84,6 @@ Minitest < 6.0 loads it automatically. For Minitest >= 6.0, add `Minitest.load :
 Holdify supports the following command-line options:
 
 - `--holdify-reconcile`: Updates all stored values to match the current output. Use with caution! (Implies `--holdify-quiet`).
-- `--holdify-pretty`: Forces "GitHub-style" pretty diffs using Git. This is enabled automatically if Git is installed and running in a terminal.
 - `--holdify-quiet`: Suppresses warnings when new values are stored.
 
 ## How it works
@@ -186,10 +185,34 @@ The store file will look like this:
 
 ```yaml
 L10 ac3b...:
-- :permissions: 
+- :permissions:
   - :read
   - :write
 ```
+
+### Loop inside, not outside
+
+If you define tests inside a loop, Holdify cannot distinguish between them. This causes collisions where different tests try to claim the same stored value.
+
+**Solution:** Put the loop **inside** the test.
+
+```ruby
+# Avoid: Loop generating tests
+[1, 2].each do |i|
+  it "test #{i}" do
+    assert_hold i
+  end
+end
+
+# Use: Loop inside the test
+it "tests sequence" do
+  [1, 2].each do |i|
+    assert_hold i
+  end
+end
+```
+
+Consider that loops generate multiple values at the same line, which will result in a single line storing an array of results. It will all work fine, but remember that the tests will be matched by position. If you are going to modify the number or variables iterating through different loops, it will be better [labeling values](#labeling-values) to ease the debugging of failures.
 
 ## Caveats
 

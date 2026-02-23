@@ -5,12 +5,16 @@ require_relative 'holdify/hold'
 
 # The container module
 module Holdify
-  VERSION = '1.1.3'
+  VERSION = '1.2.0'
   CONFIG  = { ext: '.yaml' }.freeze
 
   class << self
     attr_accessor :reconcile, :quiet
-    attr_writer :pretty
+
+    def config
+      @config ||= { git:   system('git --version', out: File::NULL, err: File::NULL),
+                    color: !ENV.key?('NO_COLOR') }
+    end
 
     def stores(path = nil)
       return @stores unless path
@@ -22,13 +26,6 @@ module Holdify
 
     def persist_all!
       @stores&.each_value(&:persist)
-    end
-
-    def pretty
-      return @pretty unless @pretty.nil?
-
-      @pretty = $stdout.tty? && !ENV.key?('NO_COLOR') && ENV['TERM'] != 'dumb' &&
-                system('git --version', out: File::NULL, err: File::NULL)
     end
   end
   @mutex  = Mutex.new

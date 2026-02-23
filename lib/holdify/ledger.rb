@@ -28,8 +28,32 @@ module Holdify
         output["L#{line} #{xxh}"] = @data[line]
       end
 
-      content = YAML.dump(output, line_width: 78) # Ensure 80 columns (including pretty gutter)
+      content = YAML.dump(output)
       File.write(@path, content)
+    end
+
+    # Used in Failure to get the actual storage metadata
+    def lookup(lineno, index = 0)
+      return unless File.exist?(@path)
+
+      xxh   = @source.xxh(lineno)
+      key   = "L#{lineno} #{xxh}"
+
+      found = false
+      count = -1
+
+      File.foreach(@path).with_index(1) do |content, ln|
+        if found
+          next unless content.start_with?('-')
+
+          count += 1
+          next unless count == index
+
+          return { path: @path, line: ln, key: key }
+        else
+          found = content.match(/\b#{xxh}\b/)
+        end
+      end
     end
 
     private
@@ -42,13 +66,13 @@ module Holdify
           next if lines.empty?
 
           # Position of the held lines compared to the source lines
-          stayed, moved = entries.map { |key, values| { line: key[/\d+/].to_i, values: values } }
-                                 .partition { |c| lines.include?(c[:line]) }
-          moved.sort_by! { |c| c[:line] }
+          stayed, moved = entries.map { |key, values| { line: key[/\d+/].to_i, values: } }
+                                 .partition { lines.include?(_1[:line]) }
+          moved.sort_by! { _1[:line] }
 
           # Align lines
           lines.each do |line|
-            match         = stayed.find { |c| c[:line] == line } || moved.shift
+            match         = stayed.find { _1[:line] == line } || moved.shift
             aligned[line] = match[:values] if match
           end
         end

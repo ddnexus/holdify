@@ -4,7 +4,7 @@ require 'test_helper'
 require 'time'
 
 describe 'holdify/stored' do
-  before { Holdify.pretty = false }
+  before { Holdify.config[:git] = false }
 
   it 'sticks entry with stored value' do
     _('stored_value').must_hold
@@ -51,11 +51,11 @@ describe 'holdify/stored' do
     error = assert_raises(Minitest::Assertion) do
       _('wrong_value').must_hold
     end
-    _(error.message).must_equal "Expected: \"right_value\"\n  Actual: \"wrong_value\""
+    _(error.message).must_match "Expected: \"right_value\"\n  Actual: \"wrong_value\""
     error2 = assert_raises(Minitest::Assertion) do
       assert_hold 'wrong_value'
     end
-    _(error2.message).must_equal "Expected: \"right_value\"\n  Actual: \"wrong_value\""
+    _(error2.message).must_match "Expected: \"right_value\"\n  Actual: \"wrong_value\""
 
     # Prevent saving the wrong values used for testing failure
     @hold.instance_variable_get(:@session).clear

@@ -13,7 +13,7 @@ ROOT="$(cd -P -- "$(dirname -- "$0")" && printf '%s\n' "$(pwd -P)")"
 
 cur=$(ruby -Ilib -rholdify -e 'puts Holdify::VERSION')
 current=${cur//./\\.}
-log=$(git log --format="- %s%b" "$cur"..HEAD)
+log=$(git log --format="- %s%n%w(0,2,2)%b" "$cur"..HEAD | sed '/^$/d')
 
 echo     "Current Holdify::VERSION: $cur"
 read -rp 'Enter the new version> ' ver
@@ -48,7 +48,7 @@ awk -v l="$changelog" '{sub(/# CHANGELOG/, l); print}' "$CHANGELOG" > "$TMPFILE"
 mv "$TMPFILE" "$CHANGELOG"
 
 # Run test to check the consistency across files
-SKIP_COVERAGE=true ruby -Itest test/holdify_test.rb --name  "/holdify::Version match(#|::)/"
+SKIP_COVERAGE=true bundle exec ruby -Itest test/holdify_test.rb --name  "/holdify::Version match(#|::)/"
 
 bundle install --local
 
