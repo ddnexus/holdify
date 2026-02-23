@@ -1,0 +1,24 @@
+diff --git a/diff_test.rb.yaml b/diff_test_actual.rb.yaml
+index 43234b7..e216369 100644
+--- a/diff_test.rb.yaml
++++ b/diff_test_actual.rb.yaml
+@@ -1,16 +1,16 @@
+ ---
+ L10 51898a228aead05f:
+ - - one
+   - two
+   - three
+ L33 653e11aeec38dce2:
+ - :app: Holdify
+-  :version: 1.1.1
++  :version: 1.0.6
+   :features:
+   - store
+   - pretty_diff
+   :config:
+-    :adapter: sqlite
+     :pool: 10
+     :timeout: 5000
+-  :description: Holdify allows you to easily hold objects and compare them in future runs. It uses git for diffs.
++    :tz: EST
++  :description: Holdify allows you to automatically hold objects and compare them in future runs. It run git diffs.
