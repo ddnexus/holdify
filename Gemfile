@@ -4,13 +4,11 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'digest-xxhash'
-gem 'irb'
-gem 'mutex_m'
 gem 'rake'
-gem 'reline'
 
-group :test do
+group :development, :test do
+  gem 'debug'
+  gem 'irb'
   gem 'minitest'
   gem 'minitest-mock'
   gem 'minitest-reporters'
@@ -20,5 +18,6 @@ group :test do
   gem 'rubocop-packaging'
   gem 'rubocop-performance'
   gem 'rubocop-rake'
+  gem 'rubocop-thread_safety'
   gem 'simplecov', require: false
 end
