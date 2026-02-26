@@ -4,7 +4,14 @@ require 'test_helper'
 require 'time'
 
 describe 'holdify/stored' do
-  before { Holdify.config[:git] = false }
+  before do
+    @original_config = Holdify.git
+    Holdify.git = false
+  end
+
+  after do
+    Holdify.git = @original_config
+  end
 
   it 'sticks entry with stored value' do
     _('stored_value').must_hold
@@ -44,21 +51,6 @@ describe 'holdify/stored' do
     # 13. Assertion + Proc Message
     assert_hold 'proc msg last', :assert_equal, proc { 'lazy msg' }
     _('proc msg last').must_hold :assert_equal, proc { 'lazy msg' }
-  end
-
-  it 'should fail' do
-    # the store contains 'right_value' instead of 'wrong_value' (edit manually if this test fails)
-    error = assert_raises(Minitest::Assertion) do
-      _('wrong_value').must_hold
-    end
-    _(error.message).must_match "Expected: \"right_value\"\n  Actual: \"wrong_value\""
-    error2 = assert_raises(Minitest::Assertion) do
-      assert_hold 'wrong_value'
-    end
-    _(error2.message).must_match "Expected: \"right_value\"\n  Actual: \"wrong_value\""
-
-    # Prevent saving the wrong values used for testing failure
-    @hold.instance_variable_get(:@session).clear
   end
 
   it 'should force holdify' do

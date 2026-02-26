@@ -8,7 +8,7 @@ class DiffTest < Minitest::Test
 
   def loop_helper(actual)
     assert_hold({ array: %w[line1 line2 line3] })
-    assert_hold actual
+    assert_hold actual, 'Showing how a failed hold looks in holdify'
   end
 
   def test_diff_output

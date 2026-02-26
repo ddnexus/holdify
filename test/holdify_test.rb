@@ -27,8 +27,16 @@ describe 'holdify' do
     ensure
       Holdify.quiet = false
       path = File.expand_path(__FILE__)
-      FileUtils.rm_f("#{path}#{Holdify::CONFIG[:ext]}")
+      FileUtils.rm_f("#{path}#{Holdify.store_ext}")
       Holdify.stores.delete(path)
+    end
+
+    it 'respects relative_paths config' do
+      Holdify.rel_paths = false
+      path = '/some/absolute/path/file.rb'
+      _(Holdify.relative(path)).must_equal path
+    ensure
+      Holdify.rel_paths = true
     end
   end
 
@@ -39,6 +47,26 @@ describe 'holdify' do
       assert_nil Holdify.persist_all!
     ensure
       Holdify.instance_variable_set(:@stores, stores)
+    end
+
+    it 'persists stores' do
+      path = File.expand_path(__FILE__)
+      store_path = "#{path}#{Holdify.store_ext}"
+
+      # This will create a store and add it to Holdify.stores
+      assert_hold 'data for persist_all'
+      @hold.save # This will put the data into the store object
+
+      # Now call persist_all!
+      Holdify.persist_all!
+
+      # Verify the file was written
+      assert_path_exists store_path
+      content = YAML.load_file(store_path)
+      assert_includes content.values.flatten, 'data for persist_all'
+    ensure
+      FileUtils.rm_f(store_path) if store_path
+      Holdify.stores.delete(path) if path
     end
   end
 end

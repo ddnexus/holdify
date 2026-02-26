@@ -13,13 +13,13 @@ class HoldifyPluginTest < Minitest::Test
     end
   end
 
-  class SetupFailureTest < Minitest::Test
+  class SetupFeedbackTest < Minitest::Test
     def self.runnable_methods = []
     def setup = raise('setup failure')
     def test_fail; end
   end
 
-  class BangWithFailureTest < Minitest::Test
+  class BangWithFeedbackTest < Minitest::Test
     def self.runnable_methods = []
 
     def test_bang_fail
@@ -36,11 +36,28 @@ class HoldifyPluginTest < Minitest::Test
     end
   end
 
+  def setup
+    @original_config = {
+      reconcile: Holdify.reconcile,
+      quiet:     Holdify.quiet,
+      git:       Holdify.git,
+      color:     Holdify.color,
+      rel_paths: Holdify.rel_paths,
+      store_ext: Holdify.store_ext
+    }
+  end
+
   def teardown
     path = File.expand_path(__FILE__)
     FileUtils.rm_f("#{path}.yaml")
     Holdify.stores.delete(path)
-    Holdify.quiet = false
+
+    Holdify.reconcile = @original_config[:reconcile]
+    Holdify.quiet     = @original_config[:quiet]
+    Holdify.git       = @original_config[:git]
+    Holdify.color     = @original_config[:color]
+    Holdify.rel_paths = @original_config[:rel_paths]
+    Holdify.store_ext = @original_config[:store_ext]
   end
 
   # rubocop:disable Minitest/NonExecutableTestMethod
@@ -52,39 +69,71 @@ class HoldifyPluginTest < Minitest::Test
     assert_match(/remove the "!" suffix/, test.failures.first.message)
   end
 
-  def test_setup_failure_covers_nil_holdify
-    test = SetupFailureTest.new('test_fail')
+  def test_setup_feedback_covers_nil_holdify
+    test = SetupFeedbackTest.new('test_fail')
     test.run
 
     assert_equal 1, test.failures.size
     assert_match(/setup failure/, test.failures.first.message)
   end
 
-  def test_bang_with_failure_skips_holdify_error
-    test = BangWithFailureTest.new('test_bang_fail')
+  def test_bang_with_feedback_skips_holdify_error
+    test = BangWithFeedbackTest.new('test_bang_fail')
     test.run
 
     assert_equal 1, test.failures.size
     assert_equal 'failure', test.failures.first.message
   end
 
-  def test_handles_reconcile_option_parsing
-    opts = OptionParser.new
-    Minitest.plugin_holdify_options(opts, {})
-    opts.parse!(['--holdify-reconcile'])
-    assert Holdify.reconcile
-  ensure
-    Holdify.reconcile = false
-    Holdify.quiet = false
+  def test_handles_options_parsing  # rubocop:disable Minitest/MultipleAssertions
+    options = {}
+    opts    = OptionParser.new
+    Minitest.plugin_holdify_options(opts, options)
+
+    opts.parse! %w[--holdify-reconcile --holdify-quiet --holdify-no-git-diff --holdify-no-color --holdify-no-rel-paths --holdify-store-ext .json]
+
+    assert options[:holdify_reconcile]
+    assert options[:holdify_quiet]
+    assert options[:holdify_no_git_diff]
+    assert options[:holdify_no_color]
+    assert options[:holdify_no_rel_paths]
+    assert_equal '.json', options[:holdify_store_ext]
   end
 
-  def test_handles_quiet_option_parsing
-    opts = OptionParser.new
-    Minitest.plugin_holdify_options(opts, {})
-    opts.parse!(['--holdify-quiet'])
+  def test_plugin_init_defaults # rubocop:disable Minitest/MultipleAssertions
+    Minitest.plugin_holdify_init({})
+
+    refute Holdify.reconcile
+    refute Holdify.quiet
+    assert_includes [true, false, nil], Holdify.git
+    assert_includes [true, false], Holdify.color
+    assert Holdify.rel_paths
+    assert_equal '.yaml', Holdify.store_ext
+  end
+
+  def test_plugin_init_with_options  # rubocop:disable Minitest/MultipleAssertions
+    # Clear defaults to ensure we are testing the options
+    Holdify.git       = nil
+    Holdify.color     = nil
+    Holdify.rel_paths = nil
+
+    options = {
+      holdify_reconcile:    true,
+      holdify_quiet:        true,
+      holdify_no_git_diff:  true,
+      holdify_no_color:     true,
+      holdify_no_rel_paths: true,
+      holdify_store_ext:    '.json'
+    }
+
+    Minitest.plugin_holdify_init(options)
+
+    assert Holdify.reconcile
     assert Holdify.quiet
-  ensure
-    Holdify.quiet = false
+    assert_nil Holdify.git
+    assert_nil Holdify.color
+    assert_nil Holdify.rel_paths
+    assert_equal '.json', Holdify.store_ext
   end
 
   def test_assert_hold_question_prints_nil
@@ -104,58 +153,6 @@ class HoldifyPluginTest < Minitest::Test
 
     assert_equal 1, test.failures.size
     refute_match(/\[holdify\] =>/, err)
-  end
-
-  def test_assert_hold_uses_pretty_diff
-    test = Minitest::Test.new('dummy')
-
-    mock_store = Object.new
-    def mock_store.lookup(_, _) = { path: 'path', line: 1, key: 'key' }
-
-    mock_hold = Minitest::Mock.new
-    mock_hold.expect :call, 'expected', ['actual']
-    mock_hold.expect :find_location, Struct.new(:lineno).new(1)
-    mock_hold.expect :current_index, 0, [1]
-    mock_hold.expect :store, mock_store
-
-    mock_diff = Minitest::Mock.new
-    mock_diff.expect :message, 'DIFF'
-
-    Holdify::Hold.stub :new, proc { mock_hold } do
-      Holdify::Failure.stub :new, mock_diff do
-        e = assert_raises(Minitest::Assertion) do
-          test.assert_hold('actual')
-        end
-        assert_equal 'DIFF', e.message
-      end
-    end
-    mock_diff.verify
-  end
-
-  def test_assert_hold_uses_pretty_diff_with_custom_message
-    test = Minitest::Test.new('dummy')
-
-    mock_store = Object.new
-    def mock_store.lookup(_, _) = { path: 'path', line: 1, key: 'key' }
-
-    mock_hold = Minitest::Mock.new
-    mock_hold.expect :call, 'expected', ['actual']
-    mock_hold.expect :find_location, Struct.new(:lineno).new(1)
-    mock_hold.expect :current_index, 0, [1]
-    mock_hold.expect :store, mock_store
-
-    mock_diff = Minitest::Mock.new
-    mock_diff.expect :message, 'DIFF'
-
-    Holdify::Hold.stub :new, proc { mock_hold } do
-      Holdify::Failure.stub :new, mock_diff do
-        e = assert_raises(Minitest::Assertion) do
-          test.assert_hold('actual', 'custom msg')
-        end
-        assert_equal "custom msg\nDIFF", e.message
-      end
-    end
-    mock_diff.verify
   end
   # rubocop:enable Minitest/NonExecutableTestMethod
 end

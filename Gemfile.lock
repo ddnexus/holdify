@@ -1,3 +1,14 @@
+GIT
+  remote: https://github.com/minitest-reporters/minitest-reporters
+  revision: b57e7715b5de5965f841f4409d11e9222c14d750
+  branch: master
+  specs:
+    minitest-reporters (1.7.1)
+      ansi
+      builder
+      minitest (>= 5.0, < 7)
+      ruby-progressbar
+
 PATH
   remote: .
   specs:
@@ -30,11 +41,6 @@ GEM
     minitest (6.0.1)
       prism (~> 1.5)
     minitest-mock (5.27.0)
-    minitest-reporters (1.7.1)
-      ansi
-      builder
-      minitest (>= 5.0)
-      ruby-progressbar
     minitest-unordered (1.0.3)
     parallel (1.27.0)
     parser (3.3.10.2)
@@ -111,7 +117,7 @@ DEPENDENCIES
   minitest
   minitest-holdify!
   minitest-mock
-  minitest-reporters
+  minitest-reporters!
   minitest-unordered
   rake
   rubocop

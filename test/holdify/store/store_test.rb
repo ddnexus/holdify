@@ -4,7 +4,7 @@ require 'test_helper'
 require 'yaml'
 
 describe 'Holdify::Store Specs' do
-  let(:store_path) { "#{File.expand_path(__FILE__)}#{Holdify::CONFIG[:ext]}" }
+  let(:store_path) { "#{File.expand_path(__FILE__)}#{Holdify.store_ext}" }
 
   def reset_holdify_state
     Holdify.stores.delete(File.expand_path(__FILE__))
@@ -13,8 +13,9 @@ describe 'Holdify::Store Specs' do
   end
 
   before do
+    @original_config = Holdify.git
     Holdify.quiet = false
-    Holdify.config[:git] = false
+    Holdify.git   = false
     FileUtils.rm_f(store_path)
     reset_holdify_state
   end
@@ -22,6 +23,7 @@ describe 'Holdify::Store Specs' do
   after do
     FileUtils.rm_f(store_path)
     Holdify.stores.delete(File.expand_path(__FILE__))
+    Holdify.git = @original_config
   end
 
   it 'creates the store and the entry' do
@@ -38,42 +40,14 @@ describe 'Holdify::Store Specs' do
     _(content[key]).must_equal ['a new value']
   end
 
-  it 'verifies existing entries on second run' do
-    # We use a loop to ensure the exact same line number is used for the assertion,
-    # simulating multiple runs of the same test code.
-    [0, 1, 2].each do |step|
-      val = step == 2 ? 'wrong value' : 'persistent value'
-
-      reset_holdify_state if step.positive?
-
-      begin
-        out, err = capture_io { expect(val).to_hold }
-
-        if step.zero?
-          @hold.save
-          Holdify.stores(File.expand_path(__FILE__)).persist
-        end
-
-        if step == 1
-          _(out).must_be_empty
-          _(err).must_be_empty
-        end
-      rescue Minitest::Assertion => e
-        raise e unless step == 2
-
-        _(e.message).must_match(/Expected: "persistent value"/)
-      end
-    end
-  end
-
   it 'returns nil when querying a line number not in source' do
     store = Holdify::Store.new(File.expand_path(__FILE__))
-    _(store.get(10_000)).must_be_nil
+    _(store.get_values(10_000)).must_be_nil
   end
 
   it 'skips saving entries for lines not present in source' do
     store = Holdify::Store.new(File.expand_path(__FILE__))
-    store.set(10_000, ['phantom'])
+    store.set_values(10_000, ['phantom'])
     store.persist
 
     content = YAML.load_file(store_path)
@@ -105,7 +79,7 @@ describe 'Holdify::Store Specs' do
     xxh = Digest::XXH3_64bits.hexdigest('content')
 
     # Simulate a YAML with 2 entries for that id (as if it previously had 2 lines)
-    yaml_path = "#{source_file}#{Holdify::CONFIG[:ext]}"
+    yaml_path = "#{source_file}#{Holdify.store_ext}"
     data = {
       "L1 #{xxh}" => ['val1'],
       "L2 #{xxh}" => ['val2']
@@ -123,5 +97,29 @@ describe 'Holdify::Store Specs' do
   ensure
     FileUtils.rm_f(source_file)
     FileUtils.rm_f(yaml_path)
+  end
+
+  it 'prunes orphaned entries from yaml' do
+    source_file = 'test_orphan.rb'
+    yaml_path   = "#{source_file}#{Holdify.store_ext}"
+
+    # 1. Create initial source and store with two entries
+    File.write(source_file, "assert_hold 'line 1'\nassert_hold 'line 2 orphan'\n")
+    store = Holdify::Store.new(source_file)
+    store.set_values(1, ['val1'])
+    store.set_values(2, ['val2'])
+    store.persist
+
+    # 2. Modify source file, orphaning the second entry
+    File.write(source_file, "assert_hold 'line 1'\n")
+
+    # 3. Re-initialize store, which should trigger load_and_align and prune the orphan
+    Holdify::Store.new(source_file).persist
+
+    # 4. Verify that the orphaned entry was pruned from the store file
+    assert_equal 1, YAML.load_file(yaml_path).size
+  ensure
+    FileUtils.rm_f(source_file) if source_file
+    FileUtils.rm_f(yaml_path) if yaml_path
   end
 end

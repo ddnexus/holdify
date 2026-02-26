@@ -10,17 +10,18 @@ module UpdateHelper
 
   module ClassMethods
     def watch(test_path)
-      store_path        = "#{test_path}#{Holdify::CONFIG[:ext]}"
       after_change_path = test_path.sub('.rb', '_after_change.rb.yaml')
 
       # Setup backup and verification
       before do
-        @_store_path    = store_path
-        @_original_data = File.exist?(store_path) ? File.read(store_path) : nil
+        store_path       = "#{test_path}#{Holdify.store_ext}"
+        @_store_path     = store_path
+        @_original_data  = File.exist?(store_path) ? File.read(store_path) : nil
         @_original_mtime = File.exist?(store_path) ? File.mtime(store_path) : nil
       end
 
       after do
+        store_path = "#{test_path}#{Holdify.store_ext}"
         Holdify.stores(test_path).persist
 
         begin

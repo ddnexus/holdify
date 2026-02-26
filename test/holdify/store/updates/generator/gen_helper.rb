@@ -12,7 +12,7 @@ module UpdateHelper
   module ClassMethods
     def watch(path)
       # Ensure we start fresh for the generation run
-      store_path = "#{path}#{Holdify::CONFIG[:ext]}"
+      store_path = "#{path}#{Holdify.store_ext}"
       FileUtils.rm_f(store_path)
     end
   end

@@ -4,7 +4,7 @@ require 'test_helper'
 require 'yaml'
 
 describe 'Holdify Assertions' do
-  let(:store_path) { "#{File.expand_path(__FILE__)}#{Holdify::CONFIG[:ext]}" }
+  let(:store_path) { "#{File.expand_path(__FILE__)}#{Holdify.store_ext}" }
 
   before do
     Holdify.quiet = false
@@ -58,6 +58,6 @@ describe 'Holdify Assertions' do
     # rubocop:disable Style/EvalWithLocation
     error = assert_raises(RuntimeError) { eval("_r.call('foo')", binding, __FILE__, 10_000) }
     # rubocop:enable Style/EvalWithLocation
-    assert_match(/Could not find holdify statement at line 10000/, error.message)
+    assert_match(/Could not find holdify statement at lineno 10000/, error.message)
   end
 end

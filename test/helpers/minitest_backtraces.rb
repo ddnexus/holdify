@@ -2,6 +2,22 @@
 
 # /usr/local/lib/ruby/gems/3.4.0/gems/minitest-5.25.4/lib/minitest.rb
 module Minitest
+  module RelativePaths
+    def filter_backtrace(...) # :nodoc:
+      super.map { _1.sub(%r{^#{pwd}/}, '') }
+    end
+
+    private
+
+    def pwd
+      @pwd = begin
+        git = system('git --version', out: File::NULL, err: File::NULL)
+        git ? `git rev-parse --show-toplevel`.strip : Dir.pwd
+      end
+    end
+  end
+  singleton_class.prepend RelativePaths
+
   class UnexpectedError
     module AvoidBacktraceMangling
       def message # :nodoc:

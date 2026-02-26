@@ -8,9 +8,9 @@ module KeyHelper
     end
 
     def call(actual, force: false)
-      location   = find_location
-      xxh        = @store.xxh(location.lineno)
-      @store_key = "L#{location.lineno} #{xxh}" if xxh
+      @test_loc  = find_test_loc
+      xxh        = @store.xxh(@test_loc.lineno)
+      @store_key = "L#{@test_loc.lineno} #{xxh}" if xxh
       super
     end
 
