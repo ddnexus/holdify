@@ -7,7 +7,7 @@ require_relative 'holdify/store'
 
 # The container module
 module Holdify
-  VERSION = '1.2.0'
+  VERSION = '1.3.0'
 
   class << self
     attr_accessor :reconcile, :quiet, :git, :pwd, :color, :rel_paths, :store_ext
