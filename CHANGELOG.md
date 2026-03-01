@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.3.0
+
+- Improvements and fixes:
+  - Implement hold_dump that skips YAML anchor/alias notations for easy feedback
+  - Improve failure feedback look and functionality
+  - Add new minitest plugin options
+  - Reorganize, normalize and optimize the code
+
 ## Version 1.2.0
 
 - Update run configurations

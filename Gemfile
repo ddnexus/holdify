@@ -11,7 +11,7 @@ group :development, :test do
   gem 'irb'
   gem 'minitest'
   gem 'minitest-mock'
-  gem 'minitest-reporters'
+  gem 'minitest-reporters', git: 'https://github.com/minitest-reporters/minitest-reporters', branch: 'master'
   gem 'minitest-unordered'
   gem 'rubocop'
   gem 'rubocop-minitest'

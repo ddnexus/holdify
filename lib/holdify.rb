@@ -1,19 +1,23 @@
 # frozen_string_literal: true
 
-require_relative 'holdify/store'
 require_relative 'holdify/hold'
+require_relative 'holdify/feedback'
+require_relative 'holdify/source'
+require_relative 'holdify/store'
 
 # The container module
 module Holdify
-  VERSION = '1.2.0'
-  CONFIG  = { ext: '.yaml' }.freeze
+  VERSION = '1.3.0'
 
   class << self
-    attr_accessor :reconcile, :quiet
+    attr_accessor :reconcile, :quiet, :git, :pwd, :color, :rel_paths, :store_ext
 
-    def config
-      @config ||= { git:   system('git --version', out: File::NULL, err: File::NULL),
-                    color: !ENV.key?('NO_COLOR') }
+    def persist_all! = @stores&.each_value(&:persist)
+
+    def relative(path)
+      return path unless rel_paths
+
+      path.sub(%r{^#{pwd}/}, '')
     end
 
     def stores(path = nil)
@@ -22,10 +26,6 @@ module Holdify
       @mutex.synchronize do
         @stores[path] ||= Store.new(path)
       end
-    end
-
-    def persist_all!
-      @stores&.each_value(&:persist)
     end
   end
   @mutex  = Mutex.new

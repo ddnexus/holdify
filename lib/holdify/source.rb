@@ -7,7 +7,7 @@ module Holdify
   class Source
     def initialize(path) = (@line_xxh, @xxh_lines = parse(path))
 
-    def xxh(line) = @line_xxh[line]
+    def xxh(lineno) = @line_xxh[lineno]
 
     def lines(xxh) = @xxh_lines[xxh]
 
@@ -17,13 +17,13 @@ module Holdify
       line_xxh  = {}
       xxh_lines = Hash.new { |h, k| h[k] = [] }
 
-      File.foreach(path).with_index(1) do |text, line|
+      File.foreach(path).with_index(1) do |text, lineno|
         content = text.strip
         next if content.empty?
 
-        xxh            = Digest::XXH3_64bits.hexdigest(content)
-        line_xxh[line] = xxh
-        xxh_lines[xxh] << line
+        xxh = Digest::XXH3_64bits.hexdigest(content)
+        line_xxh[lineno] = xxh
+        xxh_lines[xxh] << lineno
       end
 
       [line_xxh, xxh_lines]

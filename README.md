@@ -63,6 +63,13 @@ end
 > Of course you can also use the `_()` or `value()` with `must_hold`.
 > For example: `value(anything).must_hold`
 
+### And get helpful failure feedback
+   
+Get immediate link to the stored file/line, to the failing test, and to the triggering test line (when the failure is in a helper).
+Get the gidd diff of what changed right away. No need to manually compare flat string or structures.
+
+![Failure Feedback](assets/failure-feedback.png)
+
 ## Why Holdify?
 
 Most snapshot libraries bind stored values to the test name. If you rename a test, your snapshots break or become orphaned. Holdify is different.
@@ -81,10 +88,7 @@ Minitest < 6.0 loads it automatically. For Minitest >= 6.0, add `Minitest.load :
 
 ## Options
 
-Holdify supports the following command-line options:
-
-- `--holdify-reconcile`: Updates all stored values to match the current output. Use with caution! (Implies `--holdify-quiet`).
-- `--holdify-quiet`: Suppresses warnings when new values are stored.
+See the holdify options and descriptions with `minitest -h`
 
 ## How it works
 
@@ -141,7 +145,7 @@ assert_hold actual, :assert_equal_unordered
 _(actual).must_hold :assert_equal_unordered
 expect(actual).to_hold :assert_equal_unordered
 
-# With custom failure message
+# With custom feedback message
 assert_hold actual, 'Data consistency failed'
 _(actual).must_hold 'Data consistency failed'
 ```

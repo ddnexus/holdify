@@ -1,25 +1,43 @@
 # frozen_string_literal: true
 
 require 'holdify'
-require 'holdify/failure'
 
 # Implement the minitest plugin
 module Minitest
-  # Register the after_run hook to persist all data
-  def self.plugin_holdify_init(_options)
-    Minitest.after_run { Holdify.persist_all! }
+  # Set the Holdify options
+  def self.plugin_holdify_options(opts, options)
+    opts.on '--holdify-reconcile', 'Reconcile the held values with the new ones (enables quiet)' do
+      options[:holdify_reconcile] = true
+      options[:holdify_quiet]     = true
+    end
+    opts.on '--holdify-quiet', 'Skip the warning on storing a new value' do
+      options[:holdify_quiet] = true
+    end
+    opts.on '--holdify-no-git-diff', 'Disable git-diff' do
+      options[:holdify_no_git_diff] = true
+    end
+    opts.on '--holdify-no-color', 'Disable colored output' do
+      options[:holdify_no_color] = true
+    end
+    opts.on '--holdify-no-rel-paths', 'Disable relative paths in file references' do
+      options[:holdify_no_rel_paths] = true
+    end
+    opts.on '--holdify-store-ext EXT', 'The yaml store extension (default .yaml)' do |ext|
+      options[:holdify_store_ext] = ext
+    end
   end
 
-  # Set the Holdify options
-  def self.plugin_holdify_options(opts, _options)
-    opts.on '--holdify-reconcile', 'Reconcile the held values with the new ones' do
-      Holdify.reconcile = true
-      Holdify.quiet     = true
-    end
+  # Register the after_run hook to persist all data
+  def self.plugin_holdify_init(options)
+    Holdify.reconcile = options[:holdify_reconcile]
+    Holdify.quiet     = options[:holdify_quiet]
+    Holdify.git       = system('git --version', out: File::NULL, err: File::NULL) unless options[:holdify_no_git_diff]
+    Holdify.pwd       = Holdify.git ? `git rev-parse --show-toplevel`.strip : Dir.pwd
+    Holdify.color     = !ENV.key?('NO_COLOR') unless options[:holdify_no_color]
+    Holdify.rel_paths = true unless options[:holdify_no_rel_paths]
+    Holdify.store_ext = options[:holdify_store_ext] || '.yaml'
 
-    opts.on '--holdify-quiet', 'Skip the warning on storing a new value' do
-      Holdify.quiet = true
-    end
+    Minitest.after_run { Holdify.persist_all! }
   end
 
   # Reopen the minitest class
@@ -34,7 +52,7 @@ module Minitest
 
       path, = method(name).source_location
       msg   = +%([holdify] the value has been stored: remove the "!" suffix to pass the test\n)
-      msg  << @hold.forced.uniq.map { |line| "  #{path}:#{line}" }.join("\n")
+      msg  << @hold.forced.uniq.map { |lineno| "  #{path}:#{lineno}" }.join("\n")
 
       raise Minitest::Assertion, msg
     end
@@ -56,18 +74,10 @@ module Minitest
           send(assertion || :assert_equal, expected, actual, message)
         end
       rescue Minitest::Assertion => e
-        location = @hold.find_location
-        metadata = @hold.store.lookup(location.lineno, @hold.current_index(location.lineno))
-        hold_msg = Holdify::Failure.new(expected, actual, e.message, metadata:, location:).message
-
-        msg = message ? "#{message}\n#{hold_msg}" : hold_msg
-        raise Minitest::Assertion, msg
+        raise Minitest::Assertion, @hold.feedback(e.location, expected, actual, message)
       end
 
-      if inspect
-        location = @hold.find_location
-        warn "[holdify] The value from #{location.path}:#{location.lineno} is:\n[holdify] => #{actual.inspect}"
-      end
+      @hold.warn_for(actual) if inspect
 
       expected
     end
