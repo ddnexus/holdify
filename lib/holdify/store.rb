@@ -11,6 +11,11 @@ module Holdify
       def register(target, obj); end
     end
 
+    def self.hold_dump(obj)
+      visitor = NoAliasVisitor.create
+      visitor << obj
+      visitor.tree.to_yaml
+    end
     extend Forwardable
 
     def_delegator :@source, :xxh
@@ -38,16 +43,10 @@ module Holdify
         output["L#{lineno} #{xxh}"] = @data[lineno]
       end
 
-      File.write(@path, hold_dump(output))
+      File.write(@path, self.class.hold_dump(output))
     end
 
     private
-
-    def hold_dump(obj)
-      visitor = NoAliasVisitor.create
-      visitor << obj
-      visitor.tree.to_yaml
-    end
 
     def load_and_align
       {}.tap do |aligned|

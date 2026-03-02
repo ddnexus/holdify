@@ -68,16 +68,18 @@ module Minitest
       expected = @hold.(actual, **)
 
       begin
-        if actual.nil?
+        if inspect
+          message = ['INSPECT[?]', message].compact.join(' ')
+          flunk(message)
+        elsif actual.nil?
           assert_nil expected, message
         else
           send(assertion || :assert_equal, expected, actual, message)
         end
       rescue Minitest::Assertion => e
-        raise Minitest::Assertion, @hold.feedback(e.location, expected, actual, message)
+        feedback = @hold.feedback(e.location, expected, actual, message)
+        raise(Minitest::Assertion, feedback)
       end
-
-      @hold.warn_for(actual) if inspect
 
       expected
     end

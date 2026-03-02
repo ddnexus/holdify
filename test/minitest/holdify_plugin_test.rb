@@ -136,15 +136,6 @@ class HoldifyPluginTest < Minitest::Test
     assert_equal '.json', Holdify.store_ext
   end
 
-  def test_assert_hold_question_prints_nil
-    result = :not_nil
-    _out, err = capture_io do
-      result = assert_hold? nil
-    end
-    assert_nil result
-    assert_match(/\[holdify\] => nil/, err)
-  end
-
   def test_assert_hold_question_fail_test
     test = QuestionFailTest.new('test_question_fail')
     _out, err = capture_io do

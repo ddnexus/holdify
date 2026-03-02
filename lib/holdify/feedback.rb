@@ -68,8 +68,8 @@ module Holdify
       def git_command = "git diff --no-index --no-color --unified=1000 #{@exp_path} #{@act_path}"
 
       def diff
-        @exp_path = create_tempfile(@expected).path
-        @act_path = create_tempfile(@actual).path
+        @exp_path = create_tempfile(@expected, 'expected').path
+        @act_path = create_tempfile(@actual, 'actual').path
 
         stdout, = Open3.capture3(git_command)
         regex   = /\A[^@]*\r?\n/m   # cleanup git headers
@@ -83,9 +83,9 @@ module Holdify
         # :nocov:
       end
 
-      def create_tempfile(obj)
+      def create_tempfile(obj, type)
         Tempfile.create.tap do |file|
-          file.write(YAML.dump(obj))
+          file.write(Store.hold_dump(obj).sub(/(?=\n)/, type))
           file.close
         end
       end
@@ -94,15 +94,25 @@ module Holdify
         width  = 0
         lineno = [@yaml_lno - 1]
         lines.map.with_index do |line, i|
-          if i.zero?            # @@ ... @@
-            w = line.scan(/,(\d+)/).flatten.map(&:to_i).max
-            width = (@yaml_lno + w).to_s.length
+          if i.zero? # @@ ... @@
+            width, line = render_hunk(line)
             next line
           end
-          next if i == 1        # ---
+          next if i == 1 || (i == 2 && !Holdify.color)  # ---
 
           render_line(line, lineno, width)
         end.compact
+      end
+
+      def render_hunk(line)
+        width = 0
+        hunk  = line.gsub(/([-+]\d+),(\d+)\s+([-+]\d+),(\d+)/) do
+          v1, = $2.to_i - 1          # rubocop:disable Style/PerlBackrefs
+          v2  = $4.to_i - 1          # rubocop:disable Style/PerlBackrefs
+          width = (@yaml_lno + [v1, v2].max).to_s.length
+          "#{$1},#{v1} #{$3},#{v2}"  # rubocop:disable Style/PerlBackrefs
+        end
+        [width, hunk]
       end
 
       def render_line(line, lineno, width)
