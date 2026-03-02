@@ -57,6 +57,10 @@ Style/StringLiterals:
   Exclude:
     - test/**/*
 
+Style/OneClassPerFile:
+  Exclude:
+    - test/**/*
+
 Style/LambdaCall:
   Enabled: false
 

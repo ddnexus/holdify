@@ -51,10 +51,6 @@ module Holdify
       end
     end
 
-    def warn_for(actual)
-      warn("[holdify] The value from #{Holdify.relative(@test_loc.path)}:#{@test_loc.lineno} is:\n[holdify] => #{actual.inspect}")
-    end
-
     def feedback(*) = Feedback.new(self, *).message
   end
 end

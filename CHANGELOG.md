@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 1.3.1
+
+- Improve the feedback for inspect; fixes the hunk length numbers
+
 ## Version 1.3.0
 
 - Improvements and fixes:

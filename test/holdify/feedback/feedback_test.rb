@@ -48,7 +48,7 @@ describe 'Holdify::Feedback Specs' do
         \e[35m<<< @xxh[i] --> 6a431ee396381dd4[0]\e[0m
         \e[31m--- @stored --> test/holdify/feedback/feedback_test.rb.yaml:3\e[0m
         \e[32m+++ @tested --> test/holdify/feedback/feedback_test.rb:43\e[0m
-        \e[36m@@ -1,5 +1,5 @@\e[m
+        \e[36m@@ -1,4 +1,4 @@\e[m
          3\e[0m - common line\e[m
         \e[33m~4\e[0m - changed line \e[31mnew\e[m\e[32mold\e[m
         \e[33m~5\e[0m - \e[31mkey:\e[m\e[32mremove:\e[m \e[31mval\e[m\e[32mremove\e[m
@@ -66,7 +66,7 @@ describe 'Holdify::Feedback Specs' do
         <<< @xxh[i] --> 6a431ee396381dd4[0]
         --- @stored --> test/holdify/feedback/feedback_test.rb.yaml:8
         +++ @tested --> test/holdify/feedback/feedback_test.rb:61
-        @@ -1,5 +1,5 @@
+        @@ -1,4 +1,4 @@
           8 - common line
         - 9 - changed line new
         -10 - key: val
@@ -118,7 +118,7 @@ describe 'Holdify::Feedback Specs' do
         \e[35m<<< @xxh[i] --> 6a431ee396381dd4[0]\e[0m
         \e[31m--- @stored --> test/holdify/feedback/feedback_test.rb.yaml:23\e[0m
         \e[32m+++ @tested --> test/holdify/feedback/feedback_test.rb:113\e[0m
-        \e[36m@@ -1,5 +1,5 @@\e[m
+        \e[36m@@ -1,4 +1,4 @@\e[m
          23\e[0m - common line\e[m
         \e[33m~24\e[0m - changed line \e[31mnew\e[m\e[32mold\e[m
         \e[33m~25\e[0m - \e[31mkey:\e[m\e[32mremove:\e[m \e[31mval\e[m\e[32mremove\e[m
