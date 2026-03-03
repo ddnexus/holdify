@@ -18,10 +18,10 @@ module Holdify
       @xxhi_ref = "<<< @xxh[i] --> #{xxh}[#{index}]"
 
       @yaml_lno = find_yaml_lno(yaml_path, test_lno, xxh, index)
-      @yaml_ref = Holdify.relative("#{yaml_path}:#{@yaml_lno}")
+      @yaml_ref = Holdify.relativize("#{yaml_path}:#{@yaml_lno}")
 
-      @hold_ref = Holdify.relative(hold_ref)
-      test_ref  = Holdify.relative(hold.test_loc.to_s.sub(/:in .*$/, ''))
+      @hold_ref = Holdify.relativize(hold_ref)
+      test_ref  = Holdify.relativize(hold.test_loc.to_s.sub(/:in .*$/, ''))
       @test_ref = test_ref unless @hold_ref == test_ref
 
       @expected, @actual, @message = *args

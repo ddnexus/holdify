@@ -14,8 +14,8 @@ describe 'Holdify::Store Specs' do
 
   before do
     @original_config = Holdify.git_diff
-    Holdify.quiet = false
-    Holdify.git_diff   = false
+    Holdify.quiet    = false
+    Holdify.git_diff = false
     FileUtils.rm_f(store_path)
     reset_holdify_state
   end
@@ -23,17 +23,17 @@ describe 'Holdify::Store Specs' do
   after do
     FileUtils.rm_f(store_path)
     Holdify.stores.delete(File.expand_path(__FILE__))
+    Holdify.instance_variable_get(:@fresh)&.clear
     Holdify.git_diff = @original_config
   end
 
   it 'creates the store and the entry' do
-    _, err = capture_io do
-      expect('a new value').to_hold
-      @hold.save
-    end
+    expect('a new value').to_hold
+    @hold.save
+    _, err = capture_io { Holdify.fresh_report }
     Holdify.stores(File.expand_path(__FILE__)).persist
     key = last_key
-    _(err).must_match(/\[holdify\] Held new value for .*store_test.rb/)
+    _(err).must_match(/\[HOLDIFY\] Fresh value held for/)
 
     _(File.exist?(store_path)).must_equal true
     content = YAML.load_file(store_path)

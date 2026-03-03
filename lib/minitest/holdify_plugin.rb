@@ -19,8 +19,8 @@ module Minitest
     opts.on '--holdify-no-color', 'Disable colored output' do
       options[:holdify_no_color] = true
     end
-    opts.on '--holdify-no-rel-paths', 'Disable relative paths in file references' do
-      options[:holdify_no_rel_paths] = true
+    opts.on '--holdify-no-relative-paths', 'Disable relative paths in file references' do
+      options[:holdify_no_relative_paths] = true
     end
     opts.on '--holdify-store-ext EXT', 'The yaml store extension (default .yaml)' do |ext|
       options[:holdify_store_ext] = ext
@@ -29,15 +29,22 @@ module Minitest
 
   # Register the after_run hook to persist all data
   def self.plugin_holdify_init(options)
+    # :nocov:
+    git         = system('git --version', out: File::NULL, err: File::NULL)
+    Holdify.pwd = git ? `git rev-parse --show-toplevel`.strip : Dir.pwd
+    # :nocov:
+
     Holdify.reconcile = options[:holdify_reconcile]
     Holdify.quiet     = options[:holdify_quiet]
-    Holdify.git_diff  = system('git --version', out: File::NULL, err: File::NULL) unless options[:holdify_no_git_diff]
-    Holdify.pwd       = Holdify.git_diff ? `git rev-parse --show-toplevel`.strip : Dir.pwd
+    Holdify.git_diff  = git unless options[:holdify_no_git_diff]
     Holdify.color     = !ENV.key?('NO_COLOR') unless options[:holdify_no_color]
-    Holdify.rel_paths = true unless options[:holdify_no_rel_paths]
+    Holdify.rel_paths = true unless options[:holdify_no_relative_paths]
     Holdify.store_ext = options[:holdify_store_ext] || '.yaml'
 
-    Minitest.after_run { Holdify.persist_all! }
+    Minitest.after_run do
+      Holdify.persist_stores!
+      Holdify.fresh_report
+    end
   end
 
   # Reopen the minitest class
@@ -51,10 +58,10 @@ module Minitest
       return unless @hold.forced.any?
 
       path, = method(name).source_location
-      msg   = +%([holdify] the value has been stored: remove the "!" suffix to pass the test\n)
+      msg   = +%([HOLDIFY] Reconciled values (Remove the "!" suffix to pass the test)\n)
       msg  << @hold.forced.uniq.map { |lineno| "  #{path}:#{lineno}" }.join("\n")
 
-      raise Minitest::Assertion, msg
+      flunk msg
     end
   end
 
@@ -69,7 +76,7 @@ module Minitest
 
       begin
         if inspect
-          message = ['INSPECT[?]', message].compact.join(' ')
+          message = ['[HOLDIFY] Inspect actual value (Remove the "?" suffix to pass the test)', message].compact.join(' ')
           flunk(message)
         elsif actual.nil?
           assert_nil expected, message

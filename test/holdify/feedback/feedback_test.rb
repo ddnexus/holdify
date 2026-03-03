@@ -4,7 +4,7 @@
 require 'test_helper'
 
 # add lines for future adjustment
-#
+SEP = RUBY_VERSION.match?(/\A3\.[23]/) ? '=>' : ' => '
 describe 'Holdify::Feedback Specs' do
   let(:val) do
     if File.exist?("#{File.expand_path(__FILE__)}#{Holdify.store_ext}")
@@ -87,8 +87,8 @@ describe 'Holdify::Feedback Specs' do
         \e[35m<<< @xxh[i] --> 6a431ee396381dd4[0]\e[0m
         \e[31m--- @stored --> test/holdify/feedback/feedback_test.rb.yaml:13\e[0m
         \e[32m+++ @tested --> test/holdify/feedback/feedback_test.rb:82\e[0m
-        \e[31m- [\"common line\", \"changed line new\", {\"key\" => \"val\", \"add\" => \"add\"}]\e[0m
-        \e[32m+ [\"common line\", \"changed line old\", {\"remove\" => \"remove\", \"key\" => \"val\"}]\e[0m
+        \e[31m- [\"common line\", \"changed line new\", {\"key\"#{SEP}\"val\", \"add\"#{SEP}\"add\"}]\e[0m
+        \e[32m+ [\"common line\", \"changed line old\", {\"remove\"#{SEP}\"remove\", \"key\"#{SEP}\"val\"}]\e[0m
       EXP
     end
 
@@ -103,8 +103,8 @@ describe 'Holdify::Feedback Specs' do
         --- @stored --> test/holdify/feedback/feedback_test.rb.yaml:18
         +++ @tested --> test/holdify/feedback/feedback_test.rb:37
                     --> test/holdify/feedback/feedback_test.rb:97
-        - [\"common line\", \"changed line new\", {\"key\" => \"val\", \"add\" => \"add\"}]
-        + [\"common line\", \"changed line old\", {\"remove\" => \"remove\", \"key\" => \"val\"}]
+        - [\"common line\", \"changed line new\", {\"key\"#{SEP}\"val\", \"add\"#{SEP}\"add\"}]
+        + [\"common line\", \"changed line old\", {\"remove\"#{SEP}\"remove\", \"key\"#{SEP}\"val\"}]
       EXP
     end
 

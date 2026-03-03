@@ -11,7 +11,6 @@ module Holdify
       @store   = Holdify.stores(@path)
       @session = Hash.new { |h, k| h[k] = [] } # { lineno => [values] }
       @forced  = []                            # [ lines ]
-      @added   = []                            # [ lines ]
     end
 
     def call(actual, force: false)
@@ -28,7 +27,7 @@ module Holdify
                elsif values && index < values.size
                  values[index]
                else
-                 @added << lineno
+                 Holdify.push_fresh("#{Holdify.relativize(@path)}:#{lineno}")
                  actual
                end
 
@@ -37,7 +36,6 @@ module Holdify
     end
 
     def save
-      @added.each   { |lineno| warn "[holdify] Held new value for #{Holdify.relative(@path)}:#{lineno}" } unless Holdify.quiet
       @session.each { |lineno, values| @store.set_values(lineno, values) }
     end
 

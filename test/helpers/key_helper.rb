@@ -13,11 +13,6 @@ module KeyHelper
       @store_key = "L#{@test_loc.lineno} #{xxh}" if xxh
       super
     end
-
-    def save
-      super
-      @added.clear
-    end
   end
 
   def last_key
