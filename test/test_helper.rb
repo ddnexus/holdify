@@ -15,3 +15,6 @@ require 'helpers/minitest_backtraces'
 require 'helpers/key_helper'
 
 require 'minitest/autorun'
+
+# We don't want random warnings for testing holdify
+Holdify.quiet = true

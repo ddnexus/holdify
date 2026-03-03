@@ -27,7 +27,7 @@ module Holdify
                elsif values && index < values.size
                  values[index]
                else
-                 Holdify.push_fresh("#{Holdify.relativize(@path)}:#{lineno}")
+                 Holdify.push_fresh("#{Holdify.relativize(@test_loc.path)}:#{lineno}")
                  actual
                end
 

@@ -7,15 +7,11 @@ require 'open3'
 module Holdify
   # Feedback report on failure
   class Feedback
-    attr_reader :xxhi_ref
-
     def initialize(hold, hold_ref, *args)
       test_lno  = hold.test_loc.lineno
       index     = hold.session[test_lno].size - 1   # current index
       xxh       = hold.store.xxh(test_lno)
       yaml_path = hold.store.path
-
-      @xxhi_ref = "<<< @xxh[i] --> #{xxh}[#{index}]"
 
       @yaml_lno = find_yaml_lno(yaml_path, test_lno, xxh, index)
       @yaml_ref = Holdify.relativize("#{yaml_path}:#{@yaml_lno}")
@@ -34,7 +30,7 @@ module Holdify
       extend(Color::GitDiff) if Holdify.color
     end
 
-    def message = [@message, xxhi_ref, *file_refs, *diff, ''].join("\n")
+    def message = [@message, *file_refs, *diff, ''].join("\n")
 
     def file_refs
       ["--- @stored --> #{@yaml_ref}", "+++ @tested --> #{@hold_ref}"].tap do |refs|
@@ -42,7 +38,7 @@ module Holdify
       end
     end
 
-    def diff = ["- #{@expected.inspect}", "+ #{@actual.inspect}"]
+    def diff = ["-#{@expected.inspect}", "+#{@actual.inspect}"]
 
     private
 
@@ -58,7 +54,7 @@ module Holdify
 
           return ln
         else
-          found = line.match(/^L#{test_lno} #{xxh}:$/)
+          found = line.match(/^L#{test_lno}-#{xxh}:$/)
         end
       end
     end
@@ -144,9 +140,7 @@ module Holdify
         [dye(:red, refs.shift), *refs.map { dye(:green, _1) }]
       end
 
-      def diff = [dye(:red, "- #{@expected.inspect}"), dye(:green, "+ #{@actual.inspect}")]
-
-      def xxhi_ref = dye(:magenta, @xxhi_ref)
+      def diff = [dye(:red, "-#{@expected.inspect}"), dye(:green, "+#{@actual.inspect}")]
 
       # Methods enabling the git-diff ANSI feedback
       module GitDiff

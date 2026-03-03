@@ -7,7 +7,6 @@ describe 'Holdify Assertions' do
   let(:store_path) { "#{File.expand_path(__FILE__)}#{Holdify.store_ext}" }
 
   before do
-    Holdify.quiet = false
     Holdify.stores.delete(File.expand_path(__FILE__))
     Holdify.stores.delete(__FILE__)
     @hold = Holdify::Hold.new(self)
@@ -24,7 +23,7 @@ describe 'Holdify Assertions' do
     Holdify.stores(File.expand_path(__FILE__)).persist
     key = last_key
 
-    content = YAML.load_file(store_path)
+    content = YAML.unsafe_load_file(store_path)
     _(content[key]).must_equal [nil]
   end
 
@@ -36,7 +35,7 @@ describe 'Holdify Assertions' do
     Holdify.stores(File.expand_path(__FILE__)).persist
     key = last_key
 
-    content = YAML.load_file(store_path)
+    content = YAML.unsafe_load_file(store_path)
     _(content[key]).must_equal ['block_val']
   end
 
@@ -48,7 +47,7 @@ describe 'Holdify Assertions' do
     @hold.save
     Holdify.stores(File.expand_path(__FILE__)).persist
 
-    content = YAML.load_file(store_path)
+    content = YAML.unsafe_load_file(store_path)
     _(content[key_a]).must_equal ['a']
     _(content[key_b]).must_equal ['b']
   end

@@ -47,6 +47,12 @@ module Minitest
     end
   end
 
+  # Patching Minitest::Assertion
+  class Assertion
+    remove_const :RE
+    RE = /in [`'](?:[^']+[#.])?(?:assert|refute|flunk|pass|fail|raise|must|wont|to)/ # :nodoc:
+  end
+
   # Reopen the minitest class
   class Test
     # Ensure store is tidied and saved after the test runs

@@ -1,81 +1,81 @@
 ---
-L17 26647c99e2e3a548:
+L17-26647c99e2e3a548:
 - stored_value
-L18 8cd92a69be78a7b8:
+L18-8cd92a69be78a7b8:
 - stored_value
-L19 17379f71118df782:
+L19-17379f71118df782:
 - !ruby/range
   begin: 5
   end: 34
   excl: false
-L20 fb5a4100e77be9d7:
+L20-fb5a4100e77be9d7:
 - !ruby/range
   begin: 5
   end: 34
   excl: false
-L21 9a92cea777ffc279:
+L21-9a92cea777ffc279:
 - - 1
   - 4
   - 5
   - 6
-L22 b7204639d31d2101:
+L22-b7204639d31d2101:
 - - 1
   - 4
   - 5
   - 6
-L23 077031f7c2e6fe0b:
+L23-077031f7c2e6fe0b:
 - :a: 23
   :b:
     :c:
     - a
     - 5
-L24 5bce892f579b4b95:
+L24-5bce892f579b4b95:
 - :a: 23
   :b:
     :c:
     - a
     - 5
-L25 007d4af526d2968d:
+L25-007d4af526d2968d:
 - 2021-05-16 12:33:31.101458598 +00:00
-L26 d0e87ccbb07c81cb:
+L26-d0e87ccbb07c81cb:
 - 2021-05-16 12:33:31.101458598 +00:00
-L31 fc4834d73f8aa415:
+L31-fc4834d73f8aa415:
 - plain
-L32 2d0df92edd2083d4:
+L32-2d0df92edd2083d4:
 - plain
-L34 7d63159a6e7e50b2:
+L34-7d63159a6e7e50b2:
 - assertion only
-L35 f75cb505e30a2fb1:
+L35-f75cb505e30a2fb1:
 - assertion only
-L37 63a8f0ed12ae8953:
+L37-63a8f0ed12ae8953:
 - message only
-L38 0e202941ff2b07e6:
+L38-0e202941ff2b07e6:
 - message only
-L40 04cf534320210c67:
+L40-04cf534320210c67:
 - assertion first
-L41 73a5c6c2b13f983e:
+L41-73a5c6c2b13f983e:
 - assertion first
-L43 eef1daf7c6854822:
+L43-eef1daf7c6854822:
 - message first
-L44 6211abd192af8294:
+L44-6211abd192af8294:
 - message first
-L46 b7e14dd8c23edc1a:
+L46-b7e14dd8c23edc1a:
 - proc message
-L47 059dcf916edae0dd:
+L47-059dcf916edae0dd:
 - proc message
-L49 2cbc485a14703c26:
+L49-2cbc485a14703c26:
 - proc msg first
-L50 9260f295d97fe0ff:
+L50-9260f295d97fe0ff:
 - proc msg first
-L52 ac3b5e3505b2396f:
+L52-ac3b5e3505b2396f:
 - proc msg last
-L53 e8eae590772214e3:
+L53-e8eae590772214e3:
 - proc msg last
-L57 147db078f04c1f08:
+L57-147db078f04c1f08:
 - store-holdify (right_value)
-L59 bb986f06f0fdb05c:
+L59-bb986f06f0fdb05c:
 - store-holdify (right_value)
-L67 cf0a2ab1b64eac7e:
+L67-cf0a2ab1b64eac7e:
 - val 1
-L69 cf0a2ab1b64eac7e:
+L69-cf0a2ab1b64eac7e:
 - val 2

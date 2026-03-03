@@ -23,11 +23,14 @@ describe 'holdify' do
 
       Holdify.instance_variable_get(:@fresh).clear
       Holdify.quiet = false
+      # This covers the branch where @fresh is empty
+      assert_silent { Holdify.fresh_report }
+
       hold.call('quiet_val_false')
       _, err = capture_io { Holdify.fresh_report }
       _(err).must_match(/\[HOLDIFY\] Fresh value held for/)
     ensure
-      Holdify.quiet = false
+      Holdify.quiet = true
       path = File.expand_path(__FILE__)
       Holdify.instance_variable_get(:@fresh)&.clear
       FileUtils.rm_f("#{path}#{Holdify.store_ext}")
@@ -65,7 +68,7 @@ describe 'holdify' do
 
       # Verify the file was written
       assert_path_exists store_path
-      content = YAML.load_file(store_path)
+      content = YAML.unsafe_load_file(store_path)
       assert_includes content.values.flatten, 'data for persist_stores'
     ensure
       FileUtils.rm_f(store_path) if store_path
