@@ -31,8 +31,8 @@ module Minitest
   def self.plugin_holdify_init(options)
     Holdify.reconcile = options[:holdify_reconcile]
     Holdify.quiet     = options[:holdify_quiet]
-    Holdify.git       = system('git --version', out: File::NULL, err: File::NULL) unless options[:holdify_no_git_diff]
-    Holdify.pwd       = Holdify.git ? `git rev-parse --show-toplevel`.strip : Dir.pwd
+    Holdify.git_diff  = system('git --version', out: File::NULL, err: File::NULL) unless options[:holdify_no_git_diff]
+    Holdify.pwd       = Holdify.git_diff ? `git rev-parse --show-toplevel`.strip : Dir.pwd
     Holdify.color     = !ENV.key?('NO_COLOR') unless options[:holdify_no_color]
     Holdify.rel_paths = true unless options[:holdify_no_rel_paths]
     Holdify.store_ext = options[:holdify_store_ext] || '.yaml'

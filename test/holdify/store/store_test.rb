@@ -13,9 +13,9 @@ describe 'Holdify::Store Specs' do
   end
 
   before do
-    @original_config = Holdify.git
+    @original_config = Holdify.git_diff
     Holdify.quiet = false
-    Holdify.git   = false
+    Holdify.git_diff   = false
     FileUtils.rm_f(store_path)
     reset_holdify_state
   end
@@ -23,7 +23,7 @@ describe 'Holdify::Store Specs' do
   after do
     FileUtils.rm_f(store_path)
     Holdify.stores.delete(File.expand_path(__FILE__))
-    Holdify.git = @original_config
+    Holdify.git_diff = @original_config
   end
 
   it 'creates the store and the entry' do

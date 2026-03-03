@@ -25,12 +25,12 @@ describe 'Holdify::Feedback Specs' do
   end
 
   def with_config(**config)
-    original_config = [Holdify.git, Holdify.color]
-    Holdify.git     = config[:git]
-    Holdify.color   = config[:color]
+    original_config  = [Holdify.git_diff, Holdify.color]
+    Holdify.git_diff = config[:git]
+    Holdify.color    = config[:color]
     yield
   ensure
-    Holdify.git, Holdify.color = original_config
+    Holdify.git_diff, Holdify.color = original_config
   end
 
   def external_helper(value)

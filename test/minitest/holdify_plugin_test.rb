@@ -40,7 +40,7 @@ class HoldifyPluginTest < Minitest::Test
     @original_config = {
       reconcile: Holdify.reconcile,
       quiet:     Holdify.quiet,
-      git:       Holdify.git,
+      git:       Holdify.git_diff,
       color:     Holdify.color,
       rel_paths: Holdify.rel_paths,
       store_ext: Holdify.store_ext
@@ -54,7 +54,7 @@ class HoldifyPluginTest < Minitest::Test
 
     Holdify.reconcile = @original_config[:reconcile]
     Holdify.quiet     = @original_config[:quiet]
-    Holdify.git       = @original_config[:git]
+    Holdify.git_diff       = @original_config[:git]
     Holdify.color     = @original_config[:color]
     Holdify.rel_paths = @original_config[:rel_paths]
     Holdify.store_ext = @original_config[:store_ext]
@@ -105,7 +105,7 @@ class HoldifyPluginTest < Minitest::Test
 
     refute Holdify.reconcile
     refute Holdify.quiet
-    assert_includes [true, false, nil], Holdify.git
+    assert_includes [true, false, nil], Holdify.git_diff
     assert_includes [true, false], Holdify.color
     assert Holdify.rel_paths
     assert_equal '.yaml', Holdify.store_ext
@@ -113,7 +113,7 @@ class HoldifyPluginTest < Minitest::Test
 
   def test_plugin_init_with_options  # rubocop:disable Minitest/MultipleAssertions
     # Clear defaults to ensure we are testing the options
-    Holdify.git       = nil
+    Holdify.git_diff       = nil
     Holdify.color     = nil
     Holdify.rel_paths = nil
 
@@ -130,7 +130,7 @@ class HoldifyPluginTest < Minitest::Test
 
     assert Holdify.reconcile
     assert Holdify.quiet
-    assert_nil Holdify.git
+    assert_nil Holdify.git_diff
     assert_nil Holdify.color
     assert_nil Holdify.rel_paths
     assert_equal '.json', Holdify.store_ext

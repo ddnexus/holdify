@@ -28,7 +28,7 @@ module Holdify
 
       # Extend with features
       extend(Color) if Holdify.color
-      return unless Holdify.git
+      return unless Holdify.git_diff
 
       extend GitDiff
       extend(Color::GitDiff) if Holdify.color
@@ -137,16 +137,16 @@ module Holdify
               yellow:  "\e[33m",
               magenta: "\e[35m" }.freeze
 
-      def wrap(color, string) = "#{SGR[color]}#{string}#{SGR[:clear]}"
+      def dye(color, string) = "#{SGR[color]}#{string}#{SGR[:clear]}"
 
       def file_refs
         refs = super
-        [wrap(:red, refs.shift), *refs.map { wrap(:green, _1) }]
+        [dye(:red, refs.shift), *refs.map { dye(:green, _1) }]
       end
 
-      def diff = [wrap(:red, "- #{@expected.inspect}"), wrap(:green, "+ #{@actual.inspect}")]
+      def diff = [dye(:red, "- #{@expected.inspect}"), dye(:green, "+ #{@actual.inspect}")]
 
-      def xxhi_ref = wrap(:magenta, @xxhi_ref)
+      def xxhi_ref = dye(:magenta, @xxhi_ref)
 
       # Methods enabling the git-diff ANSI feedback
       module GitDiff

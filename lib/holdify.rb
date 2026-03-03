@@ -10,7 +10,7 @@ module Holdify
   VERSION = '1.3.1'
 
   class << self
-    attr_accessor :reconcile, :quiet, :git, :pwd, :color, :rel_paths, :store_ext
+    attr_accessor :reconcile, :quiet, :git_diff, :pwd, :color, :rel_paths, :store_ext
 
     def persist_all! = @stores&.each_value(&:persist)
 
