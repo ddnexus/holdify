@@ -6,8 +6,6 @@ $LOAD_PATH.unshift __dir__
 $LOAD_PATH.unshift File.expand_path('../lib', __dir__)
 
 require 'minitest'
-Minitest.parallel_executor = Minitest::Parallel::Executor.new(0)
-
 require 'minitest/spec'
 require 'minitest/mock'
 Minitest.load :holdify
