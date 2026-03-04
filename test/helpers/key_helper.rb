@@ -10,13 +10,8 @@ module KeyHelper
     def call(actual, force: false)
       @test_loc  = find_test_loc
       xxh        = @store.xxh(@test_loc.lineno)
-      @store_key = "L#{@test_loc.lineno} #{xxh}" if xxh
+      @store_key = "L#{@test_loc.lineno}-#{xxh}" if xxh
       super
-    end
-
-    def save
-      super
-      @added.clear
     end
   end
 

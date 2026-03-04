@@ -13,9 +13,8 @@ describe 'Holdify::Store Specs' do
   end
 
   before do
-    @original_config = Holdify.git
-    Holdify.quiet = false
-    Holdify.git   = false
+    @original_config = Holdify.git_diff
+    Holdify.git_diff = false
     FileUtils.rm_f(store_path)
     reset_holdify_state
   end
@@ -23,20 +22,23 @@ describe 'Holdify::Store Specs' do
   after do
     FileUtils.rm_f(store_path)
     Holdify.stores.delete(File.expand_path(__FILE__))
-    Holdify.git = @original_config
+    Holdify.instance_variable_get(:@fresh)&.clear
+    Holdify.git_diff = @original_config
   end
 
   it 'creates the store and the entry' do
-    _, err = capture_io do
-      expect('a new value').to_hold
-      @hold.save
-    end
+    expect('a new value').to_hold
+    @hold.save
+    Holdify.quiet = false
+    _, err = capture_io { Holdify.fresh_report }
+    Holdify.quiet = true
+
     Holdify.stores(File.expand_path(__FILE__)).persist
     key = last_key
-    _(err).must_match(/\[holdify\] Held new value for .*store_test.rb/)
+    _(err).must_match(/\[HOLDIFY\] Fresh value held for/)
 
     _(File.exist?(store_path)).must_equal true
-    content = YAML.load_file(store_path)
+    content = YAML.unsafe_load_file(store_path)
     _(content[key]).must_equal ['a new value']
   end
 
@@ -50,7 +52,7 @@ describe 'Holdify::Store Specs' do
     store.set_values(10_000, ['phantom'])
     store.persist
 
-    content = YAML.load_file(store_path)
+    content = YAML.unsafe_load_file(store_path)
     _(content).must_be_empty
   end
 
@@ -81,8 +83,8 @@ describe 'Holdify::Store Specs' do
     # Simulate a YAML with 2 entries for that id (as if it previously had 2 lines)
     yaml_path = "#{source_file}#{Holdify.store_ext}"
     data = {
-      "L1 #{xxh}" => ['val1'],
-      "L2 #{xxh}" => ['val2']
+      "L1-#{xxh}" => ['val1'],
+      "L2-#{xxh}" => ['val2']
     }
     File.write(yaml_path, YAML.dump(data))
 
@@ -91,9 +93,9 @@ describe 'Holdify::Store Specs' do
     store.persist
 
     # Verify L2 was removed because source only has 1 occurrence
-    saved_data = YAML.load_file(yaml_path)
+    saved_data = YAML.unsafe_load_file(yaml_path)
     _(saved_data.size).must_equal 1
-    _(saved_data.keys.first).must_equal "L1 #{xxh}"
+    _(saved_data.keys.first).must_equal "L1-#{xxh}"
   ensure
     FileUtils.rm_f(source_file)
     FileUtils.rm_f(yaml_path)
@@ -117,7 +119,7 @@ describe 'Holdify::Store Specs' do
     Holdify::Store.new(source_file).persist
 
     # 4. Verify that the orphaned entry was pruned from the store file
-    assert_equal 1, YAML.load_file(yaml_path).size
+    assert_equal 1, YAML.unsafe_load_file(yaml_path).size
   ensure
     FileUtils.rm_f(source_file) if source_file
     FileUtils.rm_f(yaml_path) if yaml_path

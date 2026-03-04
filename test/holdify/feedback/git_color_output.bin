@@ -4,11 +4,11 @@
 [1m+++ b/diff_test_actual.rb.yaml[m
 [36m@@ -1,16 +1,16 @@[m
 ---[m
-L10 51898a228aead05f:[m
+L10-51898a228aead05f:[m
 - - one[m
   - two[m
   - three[m
-L33 653e11aeec38dce2:[m
+L33-653e11aeec38dce2:[m
 - :app: Holdify[m
   :version: [31m1.1.1[m[32m1.0.6[m
   :features:[m

@@ -40,7 +40,7 @@ module Holdify
         xxh = @source.xxh(lineno)
         next unless xxh
 
-        output["L#{lineno} #{xxh}"] = @data[lineno]
+        output["L#{lineno}-#{xxh}"] = @data[lineno]
       end
 
       File.write(@path, self.class.hold_dump(output))
@@ -51,7 +51,7 @@ module Holdify
     def load_and_align
       {}.tap do |aligned|
         data = YAML.unsafe_load_file(@path) || {}
-        data.group_by { |k, _| k.split.last }.each do |xxh, entries|
+        data.group_by { |k, _| k.split('-').last }.each do |xxh, entries|
           lines = @source.lines(xxh)
           next if lines.empty?
 

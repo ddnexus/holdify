@@ -65,8 +65,8 @@ end
 
 ### And get helpful failure feedback
    
-Get immediate link to the stored file/line, to the failing test, and to the triggering test line (when the failure is in a helper).
-Get the gidd diff of what changed right away. No need to manually compare flat string or structures.
+Get immediate links to the stored file/line, to the failing test, and to the triggering test line (when the failure is generated outside the running test).
+Get the git diff of what changed right away. No need to manually compare flat string or structures.
 
 ![Failure Feedback](assets/failure-feedback.png)
 
@@ -105,24 +105,22 @@ Holdify binds the stored value to the **exact line number** of your assertion.
 
 When your code changes intentionally, you need to reconcile the held values with the new values. You have three options:
 
-1.  **Reconcile:** Run tests with the `--holdify-reconcile` option. Holdify will update any value that changed in the run tests.
+1. **Reconcile:** Run tests with the `--holdify-reconcile` option. Holdify will update any value that changed in the run tests.
     ```sh
     rake test TESTOPTS=--holdify-reconcile
     ```
 
-2.  **Delete:** Delete the specific `*.yaml` file(s) and re-run the test(s). Ideally suited for when you want to reset specific test files _(and deleting is easier than using the ENV variable)_.
+2. **Delete:** Delete the specific `*.yaml` file(s) and re-run the test(s). Ideally suited for when you want to reset specific test files _(and deleting is easier than using the ENV variable)_.
 
-3.  **Selective update:** Temporarily append `!` to the method statements to reconcile and re-run the test. This forces Holdify to update the value.
+3. **Selective update:** Temporarily append `!` to the method statements to reconcile and re-run the test. It stores the new value immediately and `flunk` the test intentionally, so you won't accidentally commit the added `!`. Revert to the standard method to pass the test.
+
   - `assert_hold` &rarr; `assert_hold!`
   - `must_hold` &rarr; `must_hold!`
   - `to_hold` &rarr; `to_hold!`
 
-> [!WARNING]
-> This stores the new value immediately but **raises an error** intentionally. This ensures you don't accidentally commit the `!` method. Revert to the standard method to pass the test.
-
 ### Inspecting Values
 
-To quickly inspect the actual value from your code without changing anything, append `?` to the statement and re-run the test. If the test passes (i.e, the assertion is `true`), it prints the value to `stderr`. _(If it fails, minitest takes over printing the actual and expected values, so you already have the feedback.)_
+To quickly inspect the actual value from your code without changing anything, append `?` to the statement and re-run the test. It prints the feedback and `flunk` the test intentionally, so you won't commit the '?'. 
 
 - `assert_hold` &rarr; `assert_hold?`
 - `must_hold` &rarr; `must_hold?`
@@ -165,11 +163,11 @@ Holdify stores values in a standard YAML file named after your test file (e.g., 
 ```yaml
 ---
 # Simple assertion at line 10
-L10 df67...:
+L10-df67...:
 - "simple value"
 
 # Loop executing line 15 twice
-L15 4b0a...:
+L15-4b0a...:
 - "iteration 1"
 - "iteration 2"
 ```
@@ -188,7 +186,7 @@ end
 The store file will look like this:
 
 ```yaml
-L10 ac3b...:
+L10-ac3b...:
 - :permissions:
   - :read
   - :write

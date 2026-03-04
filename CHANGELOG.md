@@ -1,5 +1,16 @@
 # CHANGELOG
 
+## Version 1.3.2
+
+- Change storage-key and feedback header
+- Improve and normalize:
+  - Mutex handling
+  - User feedback
+  - Method names
+  - README
+- Rename git > git_diff; wrap > dye
+- Remove redundant parallel_executor setup and rubocop addition to the test task
+
 ## Version 1.3.1
 
 - Improve the feedback for inspect; fixes the hunk length numbers

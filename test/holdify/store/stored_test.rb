@@ -5,12 +5,12 @@ require 'time'
 
 describe 'holdify/stored' do
   before do
-    @original_config = Holdify.git
-    Holdify.git = false
+    @original_config = Holdify.git_diff
+    Holdify.git_diff = false
   end
 
   after do
-    Holdify.git = @original_config
+    Holdify.git_diff = @original_config
   end
 
   it 'sticks entry with stored value' do

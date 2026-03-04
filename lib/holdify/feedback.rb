@@ -7,34 +7,30 @@ require 'open3'
 module Holdify
   # Feedback report on failure
   class Feedback
-    attr_reader :xxhi_ref
-
     def initialize(hold, hold_ref, *args)
       test_lno  = hold.test_loc.lineno
       index     = hold.session[test_lno].size - 1   # current index
       xxh       = hold.store.xxh(test_lno)
       yaml_path = hold.store.path
 
-      @xxhi_ref = "<<< @xxh[i] --> #{xxh}[#{index}]"
-
       @yaml_lno = find_yaml_lno(yaml_path, test_lno, xxh, index)
-      @yaml_ref = Holdify.relative("#{yaml_path}:#{@yaml_lno}")
+      @yaml_ref = Holdify.relativize("#{yaml_path}:#{@yaml_lno}")
 
-      @hold_ref = Holdify.relative(hold_ref)
-      test_ref  = Holdify.relative(hold.test_loc.to_s.sub(/:in .*$/, ''))
+      @hold_ref = Holdify.relativize(hold_ref)
+      test_ref  = Holdify.relativize(hold.test_loc.to_s.sub(/:in .*$/, ''))
       @test_ref = test_ref unless @hold_ref == test_ref
 
       @expected, @actual, @message = *args
 
       # Extend with features
       extend(Color) if Holdify.color
-      return unless Holdify.git
+      return unless Holdify.git_diff
 
       extend GitDiff
       extend(Color::GitDiff) if Holdify.color
     end
 
-    def message = [@message, xxhi_ref, *file_refs, *diff, ''].join("\n")
+    def message = [@message, *file_refs, *diff, ''].join("\n")
 
     def file_refs
       ["--- @stored --> #{@yaml_ref}", "+++ @tested --> #{@hold_ref}"].tap do |refs|
@@ -42,7 +38,7 @@ module Holdify
       end
     end
 
-    def diff = ["- #{@expected.inspect}", "+ #{@actual.inspect}"]
+    def diff = ["-#{@expected.inspect}", "+#{@actual.inspect}"]
 
     private
 
@@ -58,7 +54,7 @@ module Holdify
 
           return ln
         else
-          found = line.match(/^L#{test_lno} #{xxh}:$/)
+          found = line.match(/^L#{test_lno}-#{xxh}:$/)
         end
       end
     end
@@ -137,16 +133,14 @@ module Holdify
               yellow:  "\e[33m",
               magenta: "\e[35m" }.freeze
 
-      def wrap(color, string) = "#{SGR[color]}#{string}#{SGR[:clear]}"
+      def dye(color, string) = "#{SGR[color]}#{string}#{SGR[:clear]}"
 
       def file_refs
         refs = super
-        [wrap(:red, refs.shift), *refs.map { wrap(:green, _1) }]
+        [dye(:red, refs.shift), *refs.map { dye(:green, _1) }]
       end
 
-      def diff = [wrap(:red, "- #{@expected.inspect}"), wrap(:green, "+ #{@actual.inspect}")]
-
-      def xxhi_ref = wrap(:magenta, @xxhi_ref)
+      def diff = [dye(:red, "-#{@expected.inspect}"), dye(:green, "+#{@actual.inspect}")]
 
       # Methods enabling the git-diff ANSI feedback
       module GitDiff
