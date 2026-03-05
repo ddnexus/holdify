@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 1.3.3
+
+- Update gems
+- Improve handling of diff yaml headers
+
 ## Version 1.3.2
 
 - Change storage-key and feedback header
