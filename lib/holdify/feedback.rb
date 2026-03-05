@@ -22,12 +22,16 @@ module Holdify
 
       @expected, @actual, @message = *args
 
-      # Extend with features
-      extend(Color) if Holdify.color
+      # Extend features
+      extend Color if Holdify.color
       return unless Holdify.git_diff
 
-      extend GitDiff
-      extend(Color::GitDiff) if Holdify.color
+      @diff_yaml_headers = 2    # ----expected and +---actual (no sgr code) on 2 lines
+      extend GitDiff            # rubocop:disable Layout/EmptyLinesAfterModuleInclusion
+      return unless Holdify.color
+
+      @diff_yaml_headers = 1    # ---expected---actual (with sgr codes) on single line
+      extend Color::GitDiff
     end
 
     def message = [@message, *file_refs, *diff, ''].join("\n")
@@ -87,14 +91,15 @@ module Holdify
       end
 
       def process_lines(lines)
-        width  = 0
-        lineno = [@yaml_lno - 1]
+        width   = 0
+        lineno  = [@yaml_lno - 1]
         lines.map.with_index do |line, i|
           if i.zero? # @@ ... @@
             width, line = render_hunk(line)
             next line
+          elsif i <= @diff_yaml_headers # ---
+            next
           end
-          next if i == 1 || (i == 2 && !Holdify.color)  # ---
 
           render_line(line, lineno, width)
         end.compact
@@ -156,7 +161,7 @@ module Holdify
 
           sgr    = SGR[color].to_s if color
           gutter = if added
-                     "#{sgr}#{type} #{' ' * width}#{SGR[:clear]}"
+                     "#{sgr}#{type}#{' ' * width}#{SGR[:clear]}"
                    else
                      lineno[0] += 1
                      "#{sgr}#{type || ' '}#{lineno[0].to_s.rjust(width)}#{SGR[:clear]}"
