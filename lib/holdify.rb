@@ -23,7 +23,7 @@ module Holdify
       end
     end
 
-    def fresh_report
+    def warn_fresh_values
       return if quiet
 
       @fresh_mutex.synchronize do

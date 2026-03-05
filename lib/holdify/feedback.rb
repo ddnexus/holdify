@@ -8,12 +8,8 @@ module Holdify
   # Feedback report on failure
   class Feedback
     def initialize(hold, hold_ref, *args)
-      test_lno  = hold.test_loc.lineno
-      index     = hold.session[test_lno].size - 1   # current index
-      xxh       = hold.store.xxh(test_lno)
       yaml_path = hold.store.path
-
-      @yaml_lno = find_yaml_lno(yaml_path, test_lno, xxh, index)
+      @yaml_lno = find_yaml_lno(hold, yaml_path)
       @yaml_ref = Holdify.relativize("#{yaml_path}:#{@yaml_lno}")
 
       @hold_ref = Holdify.relativize(hold_ref)
@@ -34,7 +30,7 @@ module Holdify
       extend Color::GitDiff
     end
 
-    def message = [@message, *file_refs, *diff, ''].join("\n")
+    def render = [@message, *file_refs, *diff, ''].join("\n")
 
     def file_refs
       ["--- @stored --> #{@yaml_ref}", "+++ @tested --> #{@hold_ref}"].tap do |refs|
@@ -46,7 +42,11 @@ module Holdify
 
     private
 
-    def find_yaml_lno(yaml_path, test_lno, xxh, index)
+    def find_yaml_lno(hold, yaml_path)
+      test_lno = hold.test_loc.lineno
+      index    = hold.session[test_lno].size - 1   # current index
+      xxh      = hold.store.xxh(test_lno)
+
       found = false
       count = -1
       File.foreach(yaml_path).with_index(1) do |line, ln|
@@ -91,8 +91,8 @@ module Holdify
       end
 
       def process_lines(lines)
-        width   = 0
-        lineno  = [@yaml_lno - 1]
+        width  = 0
+        lineno = [@yaml_lno - 1]
         lines.map.with_index do |line, i|
           if i.zero? # @@ ... @@
             width, line = render_hunk(line)
@@ -105,14 +105,16 @@ module Holdify
         end.compact
       end
 
+      # Reduce the hunk lines by 1 and calculate the gutter width
       def render_hunk(line)
         width = 0
         hunk  = line.gsub(/([-+]\d+),(\d+)\s+([-+]\d+),(\d+)/) do
-          v1, = $2.to_i - 1          # rubocop:disable Style/PerlBackrefs
-          v2  = $4.to_i - 1          # rubocop:disable Style/PerlBackrefs
-          width = (@yaml_lno + [v1, v2].max).to_s.length
-          "#{$1},#{v1} #{$3},#{v2}"  # rubocop:disable Style/PerlBackrefs
-        end
+                  v1,   = $2.to_i - 1          # rubocop:disable Style/PerlBackrefs
+                  v2    = $4.to_i - 1          # rubocop:disable Style/PerlBackrefs
+                  width = (@yaml_lno + [v1, v2].max).to_s.length
+                  "#{$1},#{v1} #{$3},#{v2}"    # rubocop:disable Style/PerlBackrefs
+                end
+
         [width, hunk]
       end
 
@@ -150,7 +152,8 @@ module Holdify
       # Methods enabling the git-diff ANSI feedback
       module GitDiff
         def git_command
-          re = '[[:alnum:]:._-]+|[^[:alnum:]:._-]|[[:space:]]+' # YAML and HTML friendly: avoid long continuous tokens
+          # Words/ruby entities | indent | other single-chars
+          re = '[[:alnum:]_:]+|[[:space:]]+|.'
           "git diff --no-index --color-words='#{re}' --unified=1000 #{@exp_path} #{@act_path}"
         end
 
@@ -167,7 +170,7 @@ module Holdify
                      "#{sgr}#{type}#{' ' * width}#{SGR[:clear]}"
                    else
                      lineno[0] += 1
-                     "#{sgr}#{type || ' '}#{lineno[0].to_s.rjust(width)}#{SGR[:clear]}"
+                     "#{sgr}#{type || ' '}#{lineno[0].to_s.rjust(width)}#{SGR[:clear] if sgr}"
                    end
 
           "#{gutter} #{line}"

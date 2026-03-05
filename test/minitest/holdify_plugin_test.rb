@@ -88,13 +88,14 @@ class HoldifyPluginTest < Minitest::Test
     opts    = OptionParser.new
     Minitest.plugin_holdify_options(opts, options)
 
-    opts.parse! %w[--holdify-reconcile --holdify-quiet --holdify-no-git-diff --holdify-no-color --holdify-no-rel-paths --holdify-store-ext .json]
+    opts.parse! %w[--holdify-reconcile --holdify-quiet --holdify-no-git-diff
+                   --holdify-no-color --holdify-absolute-paths --holdify-store-ext .json]
 
     assert options[:holdify_reconcile]
     assert options[:holdify_quiet]
     assert options[:holdify_no_git_diff]
     assert options[:holdify_no_color]
-    assert options[:holdify_no_relative_paths]
+    assert options[:holdify_absolute_paths]
     assert_equal '.json', options[:holdify_store_ext]
   end
 
@@ -116,12 +117,12 @@ class HoldifyPluginTest < Minitest::Test
     Holdify.rel_paths = nil
 
     options = {
-      holdify_reconcile:    true,
-      holdify_quiet:        true,
-      holdify_no_git_diff:  true,
-      holdify_no_color:     true,
-      holdify_no_relative_paths: true,
-      holdify_store_ext:    '.json'
+      holdify_reconcile:      true,
+      holdify_quiet:          true,
+      holdify_no_git_diff:    true,
+      holdify_no_color:       true,
+      holdify_absolute_paths: true,
+      holdify_store_ext:      '.json'
     }
 
     Minitest.plugin_holdify_init(options)
