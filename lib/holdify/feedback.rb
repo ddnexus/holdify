@@ -149,7 +149,10 @@ module Holdify
 
       # Methods enabling the git-diff ANSI feedback
       module GitDiff
-        def git_command = "git diff --no-index --color-words='[^ ]+|[ ]+' --unified=1000 #{@exp_path} #{@act_path}"
+        def git_command
+          re = '[[:alnum:]:._-]+|[^[:alnum:]:._-]|[[:space:]]+' # YAML and HTML friendly: avoid long continuous tokens
+          "git diff --no-index --color-words='#{re}' --unified=1000 #{@exp_path} #{@act_path}"
+        end
 
         def render_line(line, lineno, width)
           clean   = line.gsub(/\e\[(1|22|0)m/, '').lstrip
