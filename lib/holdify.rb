@@ -7,7 +7,7 @@ require_relative 'holdify/store'
 
 # The container module
 module Holdify
-  VERSION = '1.3.3'
+  VERSION = '1.3.4'
 
   @fresh_mutex  = Mutex.new
   @fresh        = []
