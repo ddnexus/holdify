@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 1.3.4
+
+- Fix RM run config
+- Improve feedback making color_words_re HTML friendly
+
 ## Version 1.3.3
 
 - Update gems
