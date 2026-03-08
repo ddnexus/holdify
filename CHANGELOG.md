@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## Version 1.3.5
+
+- Improve:
+  - Simplifycolor_words regex
+  - Rename --holdify-no-rel-paths > --holdify-absolute-paths
+  - Rename fresh_report > warn_fresh_values
+  - Rename message > render
+
 ## Version 1.3.4
 
 - Fix RM run config

@@ -39,6 +39,10 @@ module Holdify
       @session.each { |lineno, values| @store.set_values(lineno, values) }
     end
 
+    def feedback(*) = Feedback.new(self, *).render
+
+    private
+
     # Find the triggering LOC inside the test block/method
     def find_test_loc
       caller_locations(2).find do |location|
@@ -48,7 +52,5 @@ module Holdify
         label == @test.name || label == '<top (required)>' || label == '<main>' || label.start_with?('<class:', '<module:')
       end
     end
-
-    def feedback(*) = Feedback.new(self, *).message
   end
 end

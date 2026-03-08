@@ -19,8 +19,8 @@ module Minitest
     opts.on '--holdify-no-color', 'Disable colored output' do
       options[:holdify_no_color] = true
     end
-    opts.on '--holdify-no-relative-paths', 'Disable relative paths in file references' do
-      options[:holdify_no_relative_paths] = true
+    opts.on '--holdify-absolute-paths', 'Disable relative paths in file references' do
+      options[:holdify_absolute_paths] = true
     end
     opts.on '--holdify-store-ext EXT', 'The yaml store extension (default .yaml)' do |ext|
       options[:holdify_store_ext] = ext
@@ -38,19 +38,19 @@ module Minitest
     Holdify.quiet     = options[:holdify_quiet]
     Holdify.git_diff  = git unless options[:holdify_no_git_diff]
     Holdify.color     = !ENV.key?('NO_COLOR') unless options[:holdify_no_color]
-    Holdify.rel_paths = true unless options[:holdify_no_relative_paths]
+    Holdify.rel_paths = true unless options[:holdify_absolute_paths]
     Holdify.store_ext = options[:holdify_store_ext] || '.yaml'
 
     Minitest.after_run do
       Holdify.persist_stores!
-      Holdify.fresh_report
+      Holdify.warn_fresh_values
     end
   end
 
   # Patching Minitest::Assertion
   class Assertion
     remove_const :RE
-    RE = /in [`'](?:[^']+[#.])?(?:assert|refute|flunk|pass|fail|raise|must|wont|to)/ # :nodoc:
+    RE = /in [`'](?:[^']+[#.])?(?:assert|refute|flunk|pass|fail|raise|must|wont|to)/ # add to (to_hold)
   end
 
   # Reopen the minitest class

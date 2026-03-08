@@ -30,7 +30,7 @@ describe 'Holdify::Store Specs' do
     expect('a new value').to_hold
     @hold.save
     Holdify.quiet = false
-    _, err = capture_io { Holdify.fresh_report }
+    _, err = capture_io { Holdify.warn_fresh_values }
     Holdify.quiet = true
 
     Holdify.stores(File.expand_path(__FILE__)).persist

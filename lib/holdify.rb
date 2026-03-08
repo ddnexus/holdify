@@ -7,7 +7,7 @@ require_relative 'holdify/store'
 
 # The container module
 module Holdify
-  VERSION = '1.3.4'
+  VERSION = '1.3.5'
 
   @fresh_mutex  = Mutex.new
   @fresh        = []
@@ -23,7 +23,7 @@ module Holdify
       end
     end
 
-    def fresh_report
+    def warn_fresh_values
       return if quiet
 
       @fresh_mutex.synchronize do

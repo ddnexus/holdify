@@ -19,15 +19,15 @@ describe 'holdify' do
       Holdify.quiet = true
       hold = Holdify::Hold.new(self)
       hold.call('quiet_val')
-      assert_silent { Holdify.fresh_report }
+      assert_silent { Holdify.warn_fresh_values }
 
       Holdify.instance_variable_get(:@fresh).clear
       Holdify.quiet = false
       # This covers the branch where @fresh is empty
-      assert_silent { Holdify.fresh_report }
+      assert_silent { Holdify.warn_fresh_values }
 
       hold.call('quiet_val_false')
-      _, err = capture_io { Holdify.fresh_report }
+      _, err = capture_io { Holdify.warn_fresh_values }
       _(err).must_match(/\[HOLDIFY\] Fresh value held for/)
     ensure
       Holdify.quiet = true
