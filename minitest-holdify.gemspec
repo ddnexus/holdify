@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name        = 'minitest-holdify'
-  s.version     = '1.3.5'
+  s.version     = '1.3.6'
   s.authors     = ['Domizio Demichelis']
   s.email       = ['dd.nexus@gmail.com']
   s.summary     = 'Hardcoded values suck! Holdify them.'

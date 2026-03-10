@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## Version 1.3.6
+
+- Add RM run configuration
+- Improve color render_line
+
 ## Version 1.3.5
 
 - Improve:
