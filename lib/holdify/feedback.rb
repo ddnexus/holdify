@@ -158,19 +158,24 @@ module Holdify
         end
 
         def render_line(line, lineno, width)
-          clean   = line.gsub(/\e\[(1|22|0)m/, '').lstrip
-          added   = clean.start_with?(SGR[:green]) && !line.include?(SGR[:red])
-          removed = clean.start_with?(SGR[:red]) && !line.include?(SGR[:green])
-          changed = line.include?(SGR[:red]) || line.include?(SGR[:green])
+          clean       = line.strip
+          type, color = case
+                        when clean.start_with?(SGR[:green]) && !line.include?(SGR[:red]) && clean.end_with?(SGR[:clear], "\e[m")
+                          ['+', :green]
+                        when clean.start_with?(SGR[:red]) && !line.include?(SGR[:green]) && clean.end_with?(SGR[:clear], "\e[m")
+                          ['-', :red]
+                        when line.include?(SGR[:red]) || line.include?(SGR[:green])
+                          ['~', :yellow]
+                        else
+                          [' ', :none]
+                        end
 
-          type, color = (added && ['+', :green]) || (removed && ['-', :red]) || (changed && ['~', :yellow])
-
-          sgr    = SGR[color].to_s if color
-          gutter = if added
+          sgr    = SGR[color]
+          gutter = if type == '+'
                      "#{sgr}#{type}#{' ' * width}#{SGR[:clear]}"
                    else
                      lineno[0] += 1
-                     "#{sgr}#{type || ' '}#{lineno[0].to_s.rjust(width)}#{SGR[:clear] if sgr}"
+                     "#{sgr}#{type}#{lineno[0].to_s.rjust(width)}#{SGR[:clear] if sgr}"
                    end
 
           "#{gutter} #{line}"
