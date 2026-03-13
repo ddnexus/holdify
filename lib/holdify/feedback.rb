@@ -137,10 +137,9 @@ module Holdify
       SGR = { clear:   "\e[0m",
               red:     "\e[31m",
               green:   "\e[32m",
-              yellow:  "\e[33m",
-              magenta: "\e[35m" }.freeze
+              yellow:  "\e[33m" }.freeze
 
-      def dye(color, string) = "#{SGR[color]}#{string}#{SGR[:clear]}"
+      def dye(color, string) = "#{SGR[color]}#{string}#{SGR[:clear] if SGR[color]}"
 
       def file_refs
         refs = super
@@ -170,15 +169,14 @@ module Holdify
                           [' ', :none]
                         end
 
-          sgr    = SGR[color]
           gutter = if type == '+'
-                     "#{sgr}#{type}#{' ' * width}#{SGR[:clear]}"
+                     ' ' * width
                    else
                      lineno[0] += 1
-                     "#{sgr}#{type}#{lineno[0].to_s.rjust(width)}#{SGR[:clear] if sgr}"
+                     lineno[0].to_s.rjust(width)
                    end
 
-          "#{gutter} #{line}"
+          "#{dye(color, "#{type}#{gutter}")} #{line}"
         end
       end
     end

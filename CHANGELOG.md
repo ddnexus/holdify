@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## Version 1.3.7
+
+- Simplify Feedback code
+
 ## Version 1.3.6
 
 - Add RM run configuration
