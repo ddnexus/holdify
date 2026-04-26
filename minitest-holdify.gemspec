@@ -15,7 +15,7 @@ Gem::Specification.new do |s|
                     'homepage_uri'          => 'https://github.com/ddnexus/holdify',
                     'bug_tracker_uri'       => 'https://github.com/ddnexus/holdify/issues',
                     'changelog_uri'         => 'https://github.com/ddnexus/holdify/blob/master/CHANGELOG.md' }
-  s.required_ruby_version = '>= 3.2'
+  s.required_ruby_version = '>= 3.3'
   s.add_dependency 'digest-xxhash', '>= 0.2.9'
   s.add_dependency 'minitest', '>= 5.0.0'
 end

@@ -108,12 +108,14 @@ module Holdify
       # Reduce the hunk lines by 1 and calculate the gutter width
       def render_hunk(line)
         width = 0
+        # rubocop:disable Style/PerlBackrefs
         hunk  = line.gsub(/([-+]\d+),(\d+)\s+([-+]\d+),(\d+)/) do
-                  v1,   = $2.to_i - 1          # rubocop:disable Style/PerlBackrefs
-                  v2    = $4.to_i - 1          # rubocop:disable Style/PerlBackrefs
+                  v1,   = $2.to_i - 1
+                  v2    = $4.to_i - 1
                   width = (@yaml_lno + [v1, v2].max).to_s.length
-                  "#{$1},#{v1} #{$3},#{v2}"    # rubocop:disable Style/PerlBackrefs
+                  "#{$1},#{v1} #{$3},#{v2}"
                 end
+        # rubocop:enable Style/PerlBackrefs
 
         [width, hunk]
       end
@@ -134,10 +136,10 @@ module Holdify
 
     # Methods enabling ANSI feedback
     module Color
-      SGR = { clear:   "\e[0m",
-              red:     "\e[31m",
-              green:   "\e[32m",
-              yellow:  "\e[33m" }.freeze
+      SGR = { clear:  "\e[0m",
+              red:    "\e[31m",
+              green:  "\e[32m",
+              yellow: "\e[33m" }.freeze
 
       def dye(color, string) = "#{SGR[color]}#{string}#{SGR[:clear] if SGR[color]}"
 
